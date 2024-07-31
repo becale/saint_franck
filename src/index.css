@@ -1,3 +1,29 @@
 *{
     box-sizing: border-box;
 }
+
+
+.styleamount{
+    color: red;
+}
+
+
+.stylebutton{
+    color: red;
+    font-style: italic;
+    font-size: '11px';
+}
+
+.styleError{
+    color: red;
+    font-style: italic;
+    font-size: '11px';
+}
+
+
+
+.place::placeholder{
+    color: rgb(255, 255, 255);
+
+    font-size: '50px';
+}

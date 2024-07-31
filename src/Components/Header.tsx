@@ -6,8 +6,8 @@ export function Header(){
 
     return(
         <Box height={'25%'} paddingTop={'65px'} >
-            <Heading as="h1" size={'2xl'} fontFamily={'irish Grover'} textAlign={'center'}>
-                Wellcome To Juicy Order Platform
+            <Heading as="h1"  fontFamily={'irish Grover'} textAlign={'center'}>
+                Wellcome To Juice's Order Platform
             </Heading>
         </Box> 
     )

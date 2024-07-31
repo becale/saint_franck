@@ -4,7 +4,7 @@ import { Main } from "../Main";
 import {Header} from "../Header";
 
 
-export const  Home  = ( ) => {
+const  Home  = ( ) => {
     return(
         <>
             <Header></Header>
@@ -13,3 +13,6 @@ export const  Home  = ( ) => {
         </>
     )
 }
+
+
+export default Home
