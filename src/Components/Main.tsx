@@ -2,22 +2,36 @@ import { Box, Button, Center, Text, Square, Image, useDisclosure, Select, Flex, 
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody} from "@chakra-ui/react";
 import { useState } from "react";
 import Slider  from "react-slick";
-
-import {PersonnalCheckBox, PersonnalInpunt} from "./PersonnalInput"
-
 import  * as Yup from 'yup'
-
-import { FormControl, FormLabel, Input, IconButton, Checkbox } from "@chakra-ui/react";
-
+import { FormControl, FormLabel, Input, Checkbox } from "@chakra-ui/react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "/src/index.css"
-import {useField, Field, Formik, Form, useFormikContext, useFormik , connect, getIn, FormikProvider, FormikProps} from "formik";
-
+import {useField, Field, Formik, Form, useFormik , connect, getIn, FormikProvider, FormikProps} from "formik";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { color } from "framer-motion";
+import { isExpired, decodeToken } from "react-jwt"
+import {useAuth} from "./AuthProvider"
+
+
+
+
+
+
 
 export function ModalForm() {
+
+    const {token} = useAuth()
+
+    const myDecodeToken = decodeToken(token || null)
+    const isMyTokenExpired = isExpired(token || null) 
+
+    const myTokenInfo = {
+        'myDecodeToken' : myDecodeToken,
+        'isMyTokenExpired': isMyTokenExpired
+    }
+
+    console.log(myTokenInfo)
 
     const { isOpen, onOpen, onClose  } = useDisclosure()
   
@@ -156,8 +170,10 @@ export function OrderForm(props:any){
                     </Center>
         
                     <Center mt={'30px'}>
-                        <Button 
-                            disabled  
+
+                        {(formik.values.parfum == '' || formik.values.quantite == '' || formik.values.date == '' || formik.values.periode == '')?
+                            <Button 
+                            isDisabled  
                             
                             type="submit"
         
@@ -174,7 +190,28 @@ export function OrderForm(props:any){
                             }}  
                         >
                             Commander
-                        </Button>
+                            </Button>
+                        :
+                            <Button 
+                        disabled  
+                        
+                        type="submit"
+    
+                        width={'280px'} 
+                        borderRadius={'25px'} 
+                        bgColor={'rgba(52,42,42,100%)'} 
+                        color={'white'} 
+                        border={'1px white solid'}
+    
+                        _hover={{
+                            border: "1px solid black",
+                            bg: 'lightyellow',
+                            color:'black',
+                        }}  
+                    >
+                        Commander
+                            </Button>
+                        }
                     </Center>
                 </Form>
         

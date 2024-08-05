@@ -1,7 +1,7 @@
 
 
 
-export const Log = () => {
+export  const Log = () => {
 
 
     return(
@@ -10,3 +10,5 @@ export const Log = () => {
         </>
     )
 }
+
+export default Log

@@ -11,3 +11,5 @@ export const Hom = () => {
         </>
     )
 }
+
+export default Hom

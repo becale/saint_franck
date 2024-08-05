@@ -88,29 +88,6 @@ const TableOfCommand = () => {
                     <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
                     <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
                     <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionButton/>} />
                 </Tbody>
             </Table>
         </TableContainer>

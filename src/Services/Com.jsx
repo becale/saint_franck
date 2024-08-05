@@ -9,3 +9,5 @@ export const Com = () => {
         </>
     )
 }
+
+export default Com

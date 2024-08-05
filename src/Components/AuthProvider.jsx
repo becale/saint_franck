@@ -1,66 +1,64 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { Navigate, redirect, useNavigate } from "react-router-dom";
 import Home from './Page/Home'
-//import  useLo
+import { isExpired, decodeToken } from "react-jwt"
+
 
 const AuthContext = createContext();
 
 export const  AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('site') || "");
+    const [requestStatus, setRequestatus] = useState()
+    const [loginState, setLoginState] = useState(false) 
+    const [statutRequette, setStatutRequette] = useState('')
+
+    const myDecodeToken = decodeToken(token || null)
+    const isMyTokenExpired = isExpired(token || null) 
+    const myTokenInfo = {
+        'myDecodeToken' : myDecodeToken,
+        'isMyTokenExpired': isMyTokenExpired
+    }
+
 
     const navigate = useNavigate()
-    
-    /*const fetchData =  fetch('')
-    useEffect(
-        
-    )*/
-    const goodUser = {
-        pseudo: 'admin123',
-        password: 'admin123',
-        role: ""
-    }
-
-    
-
     const  loginAction =  async (data) => {
 
-        if (data.pseudo === "admin123" && data.password ==="admin123"){
+        setLoginState(true)
+        setRequestatus()
 
-            setUser(data)
-            
-            navigate('/')
+        try {
+            const response = await fetch('https://ventejus.newvision.cm/login',{
+                method: 'POST',
+                body: data,
+            })
 
-            return
+            const res = await response.json()
 
-        }else{
-            navigate('/login')
+            if (response.ok){
+
+                setToken(res.access_token)
+                localStorage.setItem("site", res.access_token);
+                navigate('/')
+
+            } else {
+
+                navigate('/login')
+
+                if(response.status === '422') { throw new Error('Erreur 422') }
+                if(response.status === '400') { throw new Error('Erreur 400') }
+                if(response.status === '403') { throw new Error('Erreur 403') }
+
+                throw new Error(response.status)
+            }  
         }
-        
+        catch(error){
+            setLoginState(false)
+            console.log('Fetch', error)
+            setRequestatus(error.message)
+        }
     }
 
-    /*const loginAction = async (data) => {
-        try{
-            const response = await fetch('', {
-                method:"POST",
-                headers:{
-                    "Content-Type" : "application/json",
-                },
-                body: data
-            });
-            const res = await response.json();
-            if (res.data){
-                setUser(res.data.user);
-                setToken(res.token);
-                localStorage.setItem("site", res.token);
-                navigate('/home')
-                return;
-            }
-            throw new Error(res.message);
-        } catch(err) {
-            console.error(err);
-        }
-    }*/
     const logOut = () => {
         /*setUser(null);
         setToken("");
@@ -68,15 +66,16 @@ export const  AuthProvider = ({children}) => {
         navigate("/login");*/
       };
 
-    const AuthenticateAtcion = async (data) => {
-
-    }
-
-    return <AuthContext.Provider value={{user, token, loginAction, logOut}}>{children}</AuthContext.Provider>
+    const isAuthenticated = !!token
+    
+    return <AuthContext.Provider value={{myTokenInfo, isAuthenticated,loginState, user, requestStatus, token, loginAction, logOut}}>{children}</AuthContext.Provider>
 };
 
 
-
 export const useAuth = () => {
-    return useContext(AuthContext)
+    const context = useContext(AuthContext);
+    if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+    return context
 }
