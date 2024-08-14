@@ -1,17 +1,20 @@
-import { Box, Button, Center, Text, Square, Image, useDisclosure, Select, Flex, Radio, RadioGroup, Heading, VStack, SelectField } from "@chakra-ui/react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody} from "@chakra-ui/react";
-import { useState } from "react";
+import * as React from 'react';
+import { Box, Button, Center, Text, Square, Image, useDisclosure, Select, Flex, Radio, RadioGroup, Heading, VStack } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody} from "@chakra-ui/react"; //, useToast
+import { useEffect, useState } from "react";
 import Slider  from "react-slick";
-import  * as Yup from 'yup'
+import  * as Yup from 'yup';
 import { FormControl, FormLabel, Input, Checkbox } from "@chakra-ui/react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "/src/index.css"
-import {useField, Field, Formik, Form, useFormik , connect, getIn, FormikProvider, FormikProps} from "formik";
+import { useField, Field, Formik, Form, useFormik } from "formik";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { color } from "framer-motion";
 import { isExpired, decodeToken } from "react-jwt"
-import {useAuth} from "./AuthProvider"
+
+import {useAuth , AuthProvider} from "./AuthProvider"
+
+import toast, { Toaster } from 'react-hot-toast';
 
 
 
@@ -19,22 +22,70 @@ import {useAuth} from "./AuthProvider"
 
 
 
-export function ModalForm() {
 
-    const {token} = useAuth()
+export const Main = () =>{
 
-    const myDecodeToken = decodeToken(token || null)
-    const isMyTokenExpired = isExpired(token || null) 
+    const notify = () => toast('Here is your toast.')
 
-    const myTokenInfo = {
-        'myDecodeToken' : myDecodeToken,
-        'isMyTokenExpired': isMyTokenExpired
+    const {isAuthenticated, token, myTokenInfo} = useAuth()
+
+    const [listeJus, setListeJus] = useState([])
+
+    const fetchDataGetListeJus = async () => {
+        try{
+            const response = await fetch('https://ventejus.newvision.cm/jus',{
+                method : 'GET',
+                headers : {
+                    'content-type' : "application/json",
+                    'Authorization' :  token
+                }
+                
+            })
+
+            const res = await response.json()
+    
+            if(response.ok){
+                setListeJus(res)
+            }
+            else{
+                if(response.status === 422) { throw new Error('Erreur 422') }
+                if(response.status === 400) { throw new Error('Erreur 400') }
+                if(response.status === 403) { throw new Error('Erreur 403') }
+
+                //throw new Error(response.status)
+            }
+        }catch(error){
+            console.log('Fetch ListeJus', error)
+            //console.log('Essai',listeJus)
+        }
     }
+    //fetchDataGetListeJus()
+    useEffect(()=>{
+        fetchDataGetListeJus()
+    },[])
 
-    console.log(myTokenInfo)
 
+
+    return(
+        <Box height={'70%'} padding={'10px'}>
+            <Box width={'350px'} margin={'0 auto'} backgroundColor={"rgba(239,188,160,60%)"} paddingTop={'10px'}>
+                <SimpleSlider></SimpleSlider>
+            </Box>
+            <Center  margin={'0 auto'} marginTop={'80px'} >
+                <ModalForm listeJus = {listeJus}></ModalForm>
+            </Center>
+        </Box>
+    )
+}
+export default Main
+
+
+
+export function ModalForm(listeJus : [], {...props}) {
+
+    const {isAuthenticated} = useAuth()
     const { isOpen, onOpen, onClose  } = useDisclosure()
-  
+
     return (
       <>
         <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
@@ -42,6 +93,7 @@ export function ModalForm() {
             border: "1px solid black",
             bg: 'lightyellow',
             color:'black',
+            
             }}
         >
             Passez votre commande
@@ -57,13 +109,16 @@ export function ModalForm() {
             <ModalHeader><Heading textAlign={'center'} as='h3'>Finalisez votre commande</Heading></ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <OrderForm  onClose={onClose} ></OrderForm>
+              <OrderForm lockWindow={onClose} openWindow={onOpen} listeJus = {listeJus} ></OrderForm>
             </ModalBody>
           </ModalContent>
-        </Modal>
+
+        </Modal> 
       </>
     )
   }
+ 
+
 
 
 interface Values{
@@ -75,7 +130,19 @@ interface Values{
     periode:string,
 }
 
-export function OrderForm(props:any){
+function OrderForm(props:any){
+
+    const [responseValue, setResponseValue] = useState('')
+    const [toastPostCommandId, setToastPostCommandId] = useState(undefined)
+
+    type formData = {
+        utilisateurId : number,
+        jusId : number,
+        quantite: number,
+        dateLivraison : String,
+        periodeLivraison : String,
+        lieuLivraison: String
+    }
 
     const formik = useFormik({
 
@@ -101,11 +168,90 @@ export function OrderForm(props:any){
         }
     })
 
-    const handleCheckButton = (e) => {
-        e.target.value = !e.target.value
+    const getJusId = (listeJus, saveur:string) : number => {
+        let justable = []
+
+        for(let i in listeJus){
+            justable.push(listeJus[i].id)
+            justable.push(listeJus[i].saveur)
+        }
+        console.log(saveur)
+        console.log(justable)
+        if(listeJus.length < 0) return -20
+        return ((justable.indexOf(saveur) > 0) ? justable[justable.indexOf(saveur)-1] : -10)
+    }
+    
+    const {myTokenInfo, token} = useAuth()
+    
+    
+    const formatFormData = (values) => {
+        const jusId = getJusId(props.listeJus.listeJus, values.parfum)
+
+        let livraison
+        if (values.adresse == "" || values.adressedefaut == true ) { livraison = myTokenInfo.myDecodeToken.lieuLivraison }
+        if (values.adressedefaut == false) {livraison = myTokenInfo.myDecodeToken.lieuLivraison}
+        if (values.adresse !== "") { livraison =values.adresse }
+        if (values.adresse !== "" && values.adressedefaut == true) {livraison = `${myTokenInfo.myDecodeToken.lieuLivraison} ${values.adresse}`}
+        
+
+        
+        const data : formData =  {
+            utilisateurId : myTokenInfo.myDecodeToken.id, 
+            jusId : jusId, 
+            quantite : values.quantite, 
+            dateLivraison : values.date,
+            periodeLivraison : values.periode,
+            lieuLivraison : livraison
+        }
+
+
+        return data
     }
 
+    const fetchDataPostCommand = async (data) => {
+        try{
+            const response = await fetch('https://ventejus.newvision.cm/commande', {
+                method: 'POST',
+                headers: {
+                    'content-type' : 'application/json',
+                    'Authorization': token
+                },
+                body : JSON.stringify(data)
+            })
 
+            const res  = await response.json()
+
+            if(response.ok){
+                props.lockWindow()
+                toast.success('Votre Commande a été réalisée avec Succès', {
+                    id: toastPostCommandId,
+                    duration: 6000
+                })
+
+            }else{
+                toast.error('Une erreur est survenue, Votre commande a échoué', {
+                    id: toastPostCommandId,
+                    duration: 6000
+                })
+                if(response.status === 422) { throw new Error('Erreur 422') }
+                if(response.status === 400) { throw new Error('Erreur 400') }
+                if(response.status === 403) { throw new Error('Erreur 403') }
+            }
+        }catch(error){
+            props.lockWindow()
+            toast.error('Erreur réseau, votre commande a échoué', {
+                    id: toastPostCommandId,
+                    duration : 6000
+                })
+            console.log('Fetch Data Post Commande', error)
+        }
+    }
+
+    useEffect(()=>{
+        //fetchDataPostCommand(formik.values)
+    }, [])
+
+    
     return(
         ((
             <Formik 
@@ -127,10 +273,21 @@ export function OrderForm(props:any){
                 periode: Yup.string().required('Ce champ est obligatoire'),
                 })}
         
-                onSubmit={(values, {resetForm} ) => {
-                    alert(JSON.stringify(values, null, 2));
+                onSubmit={ (values, {resetForm} ) => {
+                    const toastPostCommand = toast.promise(fetchDataPostCommand(formatFormData(values)), {
+                        loading:"En attente de Réponse...",
+                        success: 'Réponse Obtenue',
+                        error: 'Erreur réseau'
+                    },{
+                        style: {
+                            minWidth : '250px'
+                        }
+                    })
+
+                    setToastPostCommandId(toastPostCommand)
                     resetForm();
                 }}
+
             >
         
             { (formik) => (
@@ -164,7 +321,7 @@ export function OrderForm(props:any){
         
                     <Center as={VStack } pt={'30px'} spacing={'20px'}>
 
-                        <Text>Vous disposez actuellement de  <span className="styleamount">X</span> crédit(s)</Text>
+                        <Text>Vous disposez actuellement de  <span className="styleamount">{myTokenInfo.myDecodeToken.montantCompte}</span> crédit(s)</Text>
                         <Heading size={'lg'}>Total :  <span className="styleamount">{formik.values.quantite}</span> Crédit(s)</Heading>
 
                     </Center>
@@ -173,45 +330,46 @@ export function OrderForm(props:any){
 
                         {(formik.values.parfum == '' || formik.values.quantite == '' || formik.values.date == '' || formik.values.periode == '')?
                             <Button 
-                            isDisabled  
-                            
-                            type="submit"
-        
-                            width={'280px'} 
-                            borderRadius={'25px'} 
-                            bgColor={'rgba(52,42,42,100%)'} 
-                            color={'white'} 
-                            border={'1px white solid'}
-        
-                            _hover={{
-                                border: "1px solid black",
-                                bg: 'lightyellow',
-                                color:'black',
+                                isDisabled  
+                                
+                                type="submit"
+            
+                                width={'280px'} 
+                                borderRadius={'25px'} 
+                                bgColor={'rgba(52,42,42,100%)'} 
+                                color={'white'} 
+                                border={'1px white solid'}
+            
+                                _hover={{
+                                    border: "1px solid black",
+                                    bg: 'lightyellow',
+                                    color:'black',
                             }}  
                         >
                             Commander
                             </Button>
                         :
                             <Button 
-                        disabled  
-                        
-                        type="submit"
-    
-                        width={'280px'} 
-                        borderRadius={'25px'} 
-                        bgColor={'rgba(52,42,42,100%)'} 
-                        color={'white'} 
-                        border={'1px white solid'}
-    
-                        _hover={{
-                            border: "1px solid black",
-                            bg: 'lightyellow',
-                            color:'black',
-                        }}  
-                    >
+                                disabled  
+
+                                type="submit"
+            
+                                width={'280px'} 
+                                borderRadius={'25px'} 
+                                bgColor={'rgba(52,42,42,100%)'} 
+                                color={'white'} 
+                                border={'1px white solid'}
+            
+                                _hover={{
+                                    border: "1px solid black",
+                                    bg: 'lightyellow',
+                                    color:'black',
+                                }}  
+                        >
                         Commander
                             </Button>
                         }
+                        
                     </Center>
                 </Form>
         
@@ -225,74 +383,62 @@ export function OrderForm(props:any){
 
 
 
-export default function SimpleSlider() {
-  var settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    adaptiveHeight : true,
-    row:2
-  };
-  return (
-    <Slider {...settings} >
-      <Box width={'100%'} height={'100%'} >
-        <Square mb={'15px'}>
-            <img src="/src/assets/anan.png" width={'200px'} height={'200px'}/>
-        </Square>
-        <Center mb={'15px'}>
-            <Text>La saveur spéciale d'Ananas frais!</Text>
-        </Center>
-        <Center mb={'20px'}>
-            <Text fontSize={'lg'} fontWeight={'bold'} fontFamily={'cursive'} color={'red'}>
-                1 Crédit
-            </Text>
-        </Center>
-      </Box>
-      
-      <Box width={'100%'} height={'100%'} >
-        <Square mb={'15px'} borderRadius={'15px'}>
-            <Image
-                boxSize={'200px'}
-                objectFit={'cover'}
-                src="/src/assets/anan.png" 
-                alt="Jus de fruits"
-                boxShadow={'md'}
-            />    
-        </Square>
-        <Center mb={'15px'}>
-            <Text>La saveur spéciale d'Ananas frais!</Text>
-        </Center>
-        <Center mb={'20px'}>
-            <Text fontSize={'lg'} fontWeight={'bold'} fontFamily={'cursive'} color={'red'}>
-                1 Crédit
-            </Text>
-        </Center>
-      </Box>
-    </Slider>
-  );
-}
 
-export function Main (){
-    return(
-        <Box height={'70%'} padding={'10px'}>
-            <Box width={'350px'} margin={'0 auto'} backgroundColor={"rgba(239,188,160,60%)"} paddingTop={'10px'}>
-                <SimpleSlider></SimpleSlider>
-            </Box>
 
-            <Center  margin={'0 auto'} marginTop={'80px'} >
-                <ModalForm></ModalForm>
-            </Center>
+
+
+
+
+
+
+function SimpleSlider() {
+    var settings = {
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      adaptiveHeight : true,
+      row:2
+    };
+    return (
+      <Slider {...settings} >
+        <Box width={'100%'} height={'100%'} >
+          <Square mb={'15px'}>
+              <img src="/src/assets/anan.png" width={'200px'} height={'200px'}/>
+          </Square>
+          <Center mb={'15px'}>
+              <Text>La saveur spéciale d'Ananas frais!</Text>
+          </Center>
+          <Center mb={'20px'}>
+              <Text fontSize={'lg'} fontWeight={'bold'} fontFamily={'cursive'} color={'red'}>
+                  1 Crédit
+              </Text>
+          </Center>
         </Box>
-
-    )
-}
-
-
-
-
-
+        
+        <Box width={'100%'} height={'100%'} >
+          <Square mb={'15px'} borderRadius={'15px'}>
+              <Image
+                  boxSize={'200px'}
+                  objectFit={'cover'}
+                  src="/src/assets/anan.png" 
+                  alt="Jus de fruits"
+                  boxShadow={'md'}
+              />    
+          </Square>
+          <Center mb={'15px'}>
+              <Text>La saveur spéciale d'Ananas frais!</Text>
+          </Center>
+          <Center mb={'20px'}>
+              <Text fontSize={'lg'} fontWeight={'bold'} fontFamily={'cursive'} color={'red'}>
+                  1 Crédit
+              </Text>
+          </Center>
+        </Box>
+      </Slider>
+    );
+  }
   const SelectJuice = ({ label, ...props}) => {
 
     const [field, meta] = useField(props)
@@ -396,13 +542,7 @@ export function Main (){
         </>
     )
   }
-
   const ToggleInput = ( props ) => {
-
-    /*const [checked, setIsChecked] = useState({checked: "checked" })
-    const handleOnclick = () => {
-        setIsChecked({checked:""})
-    }*/
 
     const [field, meta, ] = useField({name:'adresse'})
 
@@ -447,239 +587,3 @@ export function Main (){
         </>
     )
 }
-  
-
-
-
- {/**
-     ((
-
-        
-    <Formik 
-        initialValues ={{
-            parfum:'',
-            quantite: '',
-            adressedefaut:'false',
-            adresse:'',
-            date:'',
-            periode:'',
-        }}
-
-        validationSchema = {Yup.object({
-        parfum: Yup.string().required('Ce champ est obligatoire'),
-        quantite: Yup.number().required('Ce champ est obligatoire').min(1,('Choisir au moins 1 produit')),
-        adressedefaut: Yup.string(),
-        adresse: Yup.string().min(10,'Minimum 10 caractères'),
-        date: Yup.date().required('Ce champ est obligatoire'),
-        periode: Yup.string().required('Ce champ est obligatoire'),
-        })}
-
-        onSubmit={(values, {resetForm} ) => {
-            alert(JSON.stringify(values, null, 2));
-            resetForm();
-        }}
-    >
-
-    { () => (
-        <Form>
-
-            <FormControl  height={'60px'} marginBottom={'25px'}>
-            <FormLabel>Parfum</FormLabel>
-            <SelectJuice label='Jus'name='parfum'></SelectJuice>
-            </FormControl>
-
-            <FormControl  height={'50px'} marginBottom={'25px'}  >
-                <FormLabel>Quantité</FormLabel>
-                <Field component={NumberInput} >
-                </Field>
-                <Box className="stylebutton"></Box>
-            </FormControl>
-
-            <FormControl   marginBottom={'25px'}>
-                <ToggleInput name="adresse"></ToggleInput>
-            </FormControl>
-
-            <FormControl  height={'50px'} marginBottom={'25px'}>
-                <FormLabel>Date de livraison</FormLabel>
-                <InputDate label={'date'}></InputDate>
-            </FormControl>
-
-            <FormControl  height={'50px'} marginBottom={'25px'}>
-                <FormLabel>De préférence</FormLabel>
-                <RadioGroupOf2 label='preference'></RadioGroupOf2>
-            </FormControl>
-
-            <Center as={VStack } pt={'30px'} spacing={'20px'}>
-                <Text>Vous disposez actuellement de  <span className="styleamount">X</span> crédit(s)</Text>
-                
-                <Heading size={'lg'}>Total :  <span className="styleamount"></span> Crédit(s)</Heading>
-            </Center>
-
-            <Center mt={'30px'}>
-                <Button 
-                    disabled  
-                    
-                    type="submit"
-
-                    width={'280px'} 
-                    borderRadius={'25px'} 
-                    bgColor={'rgba(52,42,42,100%)'} 
-                    color={'white'} 
-                    border={'1px white solid'}
-
-                    _hover={{
-                        border: "1px solid black",
-                        bg: 'lightyellow',
-                        color:'black',
-                    }}  
-                >
-                    Commander
-                </Button>
-            </Center>
-        </Form>
-
-    )}
-
-    </Formik> 
-))
-     */}
-
-
-
-
-{/*<Formik
-           initialValues ={{
-                parfum:'',
-                quantite: '',
-
-                adressedefaut:'',
-
-                adresse:'',
-                date:'',
-                periode:'',
-            }}
-
-            validationSchema = {Yup.object({
-            parfum: Yup.string().required('Ce champ est obligatoire'),
-            quantite: Yup.number().required('Ce champ est obligatoire').min(1,('Choisir au moins 1 produit')),
-            adressedefaut: Yup.string(),
-            adresse: Yup.string().min(10,'Minimum 10 caractères'),
-            date: Yup.date().required('Ce champ est obligatoire'),
-            periode: Yup.string().required('Ce champ est obligatoire'),
-            })}
-
-            onSubmit={(values, {resetForm} ) => {
-                alert(JSON.stringify(values, null, 2));
-                resetForm();
-            }}
-        >
-            <form onSubmit={formik.handleSubmit}>
-                <FormControl  height={'60px'} marginBottom={'25px'}>
-                <FormLabel>Parfum</FormLabel>
-                    <Select 
-                        bgColor={'rgba(84,75,75,75%)'}
-                        borderRadius={'10px'}
-                        borderColor={'rgba(84,75,75,75%)'}
-                        placeholder='Selectionner un parfum'
-                        name="parfum"
-                        onChange={formik.handleChange}
-                        value={formik.values.parfum}
-                    >
-                        <option>Ananas</option>
-                        <option>Mangue</option>
-                        <option>Baobab</option>
-                        <option>Gingembre</option>
-                    </Select>
-                </FormControl>
-
-                <FormControl  height={'60px'} marginBottom={'25px'}>
-                <FormLabel>Quantité</FormLabel>
-                    <Input
-                        name="quantite"
-                        color={'white'} 
-                        bg={'rgba(84,75,75,75%)'} 
-                        borderRadius={'10px'} 
-                        borderColor={'rgba(84,75,75,75%)'}  
-                        _focus={{border:"1px solid white"}} 
-                        boxShadow={'0'}
-
-                        onChange={formik.handleChange}
-                        value={formik.values.quantite}
-                    />
-                </FormControl>
-
-                <FormControl  height={'60px'} marginBottom={'25px'}>
-                <FormLabel>Date de livraison</FormLabel>
-                <Input 
-                    type="date" 
-                    name="date"
-                    color={'white'} 
-                    bgColor={'rgba(84,75,75,75%)'} 
-                    borderRadius={'10px'} 
-                    border={'none'} 
-                    focusBorderColor="white" 
-                    borderColor={'rgba(84,75,75,75%)'} 
-                    _hover={{border:"1px solid white"}}
-
-                    onChange={formik.handleChange}
-                    value={formik.values.date}
-                />
-                </FormControl>
-
-                <FormControl  height={'60px'} marginBottom={'60px'}>
-                    
-                    <ToggleInput ></ToggleInput>
-                </FormControl>
-                    
-                <FormControl  height={'60px'} marginBottom={'25px'}>
-                <FormLabel>Période</FormLabel>
-                    <RadioGroup>
-                        <Flex justifyContent={'space-between'}>
-                            <Radio
-                                name="periode"
-                                colorScheme={'green'} 
-                                onChange={formik.handleChange}
-                                value={formik.values.periode}
-                                value="matinee"
-                            >
-                                Matinée
-                            </Radio> 
-                            <Radio 
-                                name="periode"
-                                colorScheme={'orange'}
-                                value="apres-midi"
-                                onChange={formik.handleChange}
-                            >
-                                Après-Midi
-                            </Radio>
-                        </Flex>
-                    </RadioGroup>
-                </FormControl>
-
-                <Center as={VStack } pt={'30px'} spacing={'20px'}>
-                    <Text>Vous disposez actuellement de  <span className="styleamount">X</span> crédit(s)</Text>
-                    
-                    <Heading size={'lg'}>Total :  <span className="styleamount">{formik.values.quantite}</span> Crédit(s)</Heading>
-                </Center>
-
-                <Center mt={'30px'}>
-                    <Button 
-                        type="submit"
-                        width={'280px'} 
-                        borderRadius={'25px'} 
-                        bgColor={'rgba(52,42,42,100%)'} 
-                        color={'white'} 
-                        border={'1px white solid'}
-
-                        _hover={{
-                            border: "1px solid black",
-                            bg: 'lightyellow',
-                            color:'black',
-                        }}  
-                    >
-                        Commander
-                    </Button>
-                </Center>
-            </form>
-
-        </Formik>*/}

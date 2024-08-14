@@ -13,15 +13,13 @@ import {Hourglass, InfinitySpin} from 'react-loader-spinner'
 export  default function Login()  {
 
     const auth  = useAuth()
-    const {requestStatus, loginState, token, myTokenInfo} = useAuth()
+    const {requestStatus, loginState, token, myTokenInfo, isnetworkError} = useAuth()
 
     const handleSubmit = (values) => {
 
         const data = new FormData()
         data.append('username', values.pseudo)
         data.append('password', values.password)
-
-        //data.append( 'form', JSON.stringify( {values.pseudo, values.password} ) )
         auth.loginAction(data)
     }
     const SpinerOverlay = () => {
@@ -40,7 +38,7 @@ export  default function Login()  {
                 paddingRight={'auto'}
             > 
                 <InfinitySpin
-                    visible ={true}
+                    //visible = true
                     width="500"
                     height="500"
                     color="#4fa94d"
@@ -50,13 +48,6 @@ export  default function Login()  {
         )
     }
     
-    /*useEffect(()=>{
-        /*const data = new FormData()
-        data.append('username', formik.values.pseudo)
-        data.append('password', formik.values.password)
-        handleSubmit(data)
-    }, [collectionStatus.requestStatus])*/
-
     const formik = useFormik({
         initialValues:{
             pseudo:'',
@@ -64,7 +55,7 @@ export  default function Login()  {
         },
         validationSchema: Yup.object({
             pseudo: Yup.string().required('Champ obligatoire').min(5,'Le pseudonyme doit contenir au minimum 6 caractères'),
-            password: Yup.string().required('Champ obligatoire').min(8,'Le mot de passe doit contenir au minimum 8 caractères')
+            password: Yup.string().required('Champ obligatoire').min(6,'Le mot de passe doit contenir au minimum 8 caractères')
         }),
         onSubmit: (values , {resetForm}) => {
             handleSubmit(values)
@@ -199,7 +190,7 @@ export  default function Login()  {
                     </Box>
                 </form>
 
-                {/*requestStatus !== '403'? (<Box position={'absolute'}  marginLeft={'auto'} marginRight={'auto'} top={'15px'} color={'red'}><Heading as='h1' textAlign={'center'}   size={'xl'}>{'Erreur réseau, veuillez reessayer'}</Heading></Box>): ''*/}
+                {isnetworkError? (<Box position={'absolute'}  marginLeft={'auto'} marginRight={'auto'} top={'15px'} color={'red'}><Heading as='h1' textAlign={'center'}   size={'xl'}>{'Erreur réseau, veuillez reessayer!'}</Heading></Box>): ''}
                 {requestStatus === '403'? (<Box position={'absolute'}  marginLeft={'auto'} marginRight={'auto'} top={'15px'} color={'red'}><Heading as='h1' textAlign={'center'}   size={'xl'}>{'Pseudo ou mot de passe invalides'}</Heading></Box>): ''}
             </Box>
             

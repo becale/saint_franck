@@ -30,11 +30,27 @@ import {
     Button,
     Center
 } from "@chakra-ui/react";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
+
+import MyCommandList from "./CommandPdf";
 
  
 
 export const Command = () => {
+
+    //const fetchGetDataCommand =  fetch('', {})
+
+    const fetchModifyStatutCommand =  fetch('https://ventejus.newvision.cm/commande', {
+        method: 'PUT',
+        headers : {
+            "content-type" : 'application/json',
+            "Authorization" : `${sessionStorage.getItem('site')}`
+        }
+    })
+
+    /*useEffect({})*/
+
+
     return(
         <Box pt={'65px'} height={'932px'} pl={'13px'} pr={'13px'}>
             <Heading textAlign={'center'}>Liste des Commandes <br />non livrées</Heading>
@@ -59,16 +75,17 @@ export const Command = () => {
             <Box mt="110px" textAlign={'center'} height={'5%'} borderRadius={"10px"} border={"1px black solid"} bgColor={'rgba(232,178,178,30%)'} paddingTop={'10px'} >
                 Provided by @Saint
             </Box>
+            
         </Box>
+
+        
     )
-    {/*<Main></Main>*/}
 }
 export default Command
 
 
 const TableOfCommand = () => {
 
-    
     return(
         <TableContainer  maxW={'100%'} height={'535px'} overflowY={'scroll'} borderRadius={'10px'} border={'1px  solid black'}>
             <Table size={'sm'}  variant={'striped'} borderRadius={'10px'}>
@@ -94,7 +111,8 @@ const TableOfCommand = () => {
     )
 }
 
- type TableLineProps = {
+
+type TableLineProps = {
     id: string,
     command: string,
     action?: ReactElement

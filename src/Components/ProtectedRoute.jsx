@@ -5,11 +5,13 @@ import Home from "./Page/Home";
 import Login from "./Page/Login"
 
 
-export const ProtectedRoute = ({Children , ...rest}) => {
 
+
+export const ProtectedRoute = ({Children}) => {
+    
     const {isAuthenticated} = useAuth()
 
-    return isAuthenticated ? <Outlet /> : <Navigate to="/login" />
+    return ( (!!isAuthenticated) ? <Outlet /> : <Navigate to='/login' />)
 }
 
 export default ProtectedRoute

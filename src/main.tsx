@@ -5,21 +5,19 @@ import './index.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom'
 
-import {useAuth , AuthProvider} from "./Components/AuthProvider";
+import { AuthProvider} from "./Components/AuthProvider";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     
-      <BrowserRouter>
-        <AuthProvider>
+    <BrowserRouter>
           <ChakraProvider>
-
-            <App />
-
+            <AuthProvider>
+                <App />
+            </AuthProvider>
           </ChakraProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    
+    </BrowserRouter>
+
   </React.StrictMode>,
 )
 

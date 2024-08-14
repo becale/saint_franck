@@ -1,32 +1,34 @@
 import { createContext, Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { Navigate, redirect, useNavigate } from "react-router-dom";
-import Home from './Page/Home'
 import { isExpired, decodeToken } from "react-jwt"
+import isNetworkError from "is-network-error";
 
 
 const AuthContext = createContext();
 
 export const  AuthProvider = ({children}) => {
+    const navigate = useNavigate()
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('site') || "");
+    const [token, setToken] = useState(sessionStorage.getItem('site') || "");
     const [requestStatus, setRequestatus] = useState()
     const [loginState, setLoginState] = useState(false) 
     const [statutRequette, setStatutRequette] = useState('')
+    const [isnetworkError, setNetworkError] = useState('')
+
+    const isAuthenticated = !!token
 
     const myDecodeToken = decodeToken(token || null)
     const isMyTokenExpired = isExpired(token || null) 
+
     const myTokenInfo = {
         'myDecodeToken' : myDecodeToken,
         'isMyTokenExpired': isMyTokenExpired
     }
 
-
-    const navigate = useNavigate()
     const  loginAction =  async (data) => {
-
         setLoginState(true)
         setRequestatus()
-
+        setNetworkError(false)
         try {
             const response = await fetch('https://ventejus.newvision.cm/login',{
                 method: 'POST',
@@ -36,15 +38,12 @@ export const  AuthProvider = ({children}) => {
             const res = await response.json()
 
             if (response.ok){
-
                 setToken(res.access_token)
-                localStorage.setItem("site", res.access_token);
+                sessionStorage.setItem("site", res.access_token);
                 navigate('/')
 
             } else {
-
-                navigate('/login')
-
+                //navigate('/')
                 if(response.status === '422') { throw new Error('Erreur 422') }
                 if(response.status === '400') { throw new Error('Erreur 400') }
                 if(response.status === '403') { throw new Error('Erreur 403') }
@@ -53,7 +52,8 @@ export const  AuthProvider = ({children}) => {
             }  
         }
         catch(error){
-            setLoginState(false)
+            if(isNetworkError(error)){setNetworkError(true)}
+            //setLoginState(false)
             console.log('Fetch', error)
             setRequestatus(error.message)
         }
@@ -62,13 +62,11 @@ export const  AuthProvider = ({children}) => {
     const logOut = () => {
         /*setUser(null);
         setToken("");
-        localStorage.removeItem("site");
+        sessionStorage.removeItem("site");
         navigate("/login");*/
       };
 
-    const isAuthenticated = !!token
-    
-    return <AuthContext.Provider value={{myTokenInfo, isAuthenticated,loginState, user, requestStatus, token, loginAction, logOut}}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={{myTokenInfo, isAuthenticated,loginState, user, requestStatus,isnetworkError, token, loginAction, logOut}}>{children}</AuthContext.Provider>
 };
 
 
