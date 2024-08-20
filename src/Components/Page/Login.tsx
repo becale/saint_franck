@@ -1,10 +1,11 @@
 
 import React, { useEffect, useState } from "react"
 import  * as Yup from 'yup'
-import {FormControl,FormLabel, Button,VStack, Box, Center, Input, Heading, InputGroup, InputRightElement, useToast, Flex} from '@chakra-ui/react'
+import {Image,FormControl,FormLabel, Button,VStack, Box, Center, Input, Heading, InputGroup, InputRightElement, useToast, Flex} from '@chakra-ui/react'
 import { useFormik } from "formik"
 import {useAuth} from "../AuthProvider"
 import {Hourglass, InfinitySpin} from 'react-loader-spinner'
+//import loadimg from '../../assets/'
 
 
 
@@ -24,7 +25,7 @@ export  default function Login()  {
     }
     const SpinerOverlay = () => {
         return(
-            <Box 
+            <Box
                 w={'500px'}
                 m={'0'}
                 position={'absolute'} 
@@ -37,13 +38,16 @@ export  default function Login()  {
                 paddingLeft={'auto'}
                 paddingRight={'auto'}
             > 
-                <InfinitySpin
+                {/*<InfinitySpin
                     //visible = true
                     width="500"
                     height="500"
                     color="#4fa94d"
                     ariaLabel="infinity-spin-loading"
-                />
+                />*/}
+                <Box width={'100px'} height={'100px'}>
+                    <Image src="src/assets/loadimg.gif" />
+                </Box>
             </Box>
         )
     }

@@ -49,11 +49,9 @@ function App() {
               </Route>
 
               <Route element={ <ProtectedRoute/> }>
-                
+                <Route path='/command-list' element={<Command />} />
               </Route>
 
-              <Route path='/command-list' element={<Command />} />
-              
             </Routes>
 
             <Toaster />

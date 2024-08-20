@@ -24,55 +24,56 @@ import toast, { Toaster } from 'react-hot-toast';
 
 
 export const Main = () =>{
+    const {isAuthenticated, token, myTokenInfo} = useAuth()
+    const [listeJus, setListeJus] = useState({})
+
+    const fetchDataGetListeJus =  async () => {
+            try{
+                const response = await fetch('https://ventejus.newvision.cm/jus',{
+                    method : 'GET',
+                    headers : {
+                        'content-type' : "application/json",
+                        'Authorization' :  token
+                    }
+                    
+                })
+    
+                const res = await response.json()
+        
+                if(response.ok){
+                    setListeJus(res)
+    
+                    console.log('Check', isListeJus)
+                    setStatutRequeteListeJus(true)
+                }
+                else{
+                    if(response.status === 422) { throw new Error('Erreur 422') }
+                    if(response.status === 400) { throw new Error('Erreur 400') }
+                    if(response.status === 403) { throw new Error('Erreur 403') }
+    
+                    //throw new Error(response.status)
+                }
+            }catch(error){
+                console.log('Fetch ListeJus', error)
+            }
+    }
+    useEffect(() =>{
+        fetchDataGetListeJus()
+    }, [])
+
 
     const notify = () => toast('Here is your toast.')
-
-    const {isAuthenticated, token, myTokenInfo} = useAuth()
-
-    const [listeJus, setListeJus] = useState([])
-
-    const fetchDataGetListeJus = async () => {
-        try{
-            const response = await fetch('https://ventejus.newvision.cm/jus',{
-                method : 'GET',
-                headers : {
-                    'content-type' : "application/json",
-                    'Authorization' :  token
-                }
-                
-            })
-
-            const res = await response.json()
+    const [isListeJus, setStatutRequeteListeJus] = useState(false)
     
-            if(response.ok){
-                setListeJus(res)
-            }
-            else{
-                if(response.status === 422) { throw new Error('Erreur 422') }
-                if(response.status === 400) { throw new Error('Erreur 400') }
-                if(response.status === 403) { throw new Error('Erreur 403') }
 
-                //throw new Error(response.status)
-            }
-        }catch(error){
-            console.log('Fetch ListeJus', error)
-            //console.log('Essai',listeJus)
-        }
-    }
-    //fetchDataGetListeJus()
-    useEffect(()=>{
-        fetchDataGetListeJus()
-    },[])
-
-
-
+    
     return(
         <Box height={'70%'} padding={'10px'}>
             <Box width={'350px'} margin={'0 auto'} backgroundColor={"rgba(239,188,160,60%)"} paddingTop={'10px'}>
                 <SimpleSlider></SimpleSlider>
             </Box>
             <Center  margin={'0 auto'} marginTop={'80px'} >
-                <ModalForm listeJus = {listeJus}></ModalForm>
+                <ModalForm listeJus = {listeJus}> </ModalForm>
             </Center>
         </Box>
     )
@@ -86,18 +87,40 @@ export function ModalForm(listeJus : [], {...props}) {
     const {isAuthenticated} = useAuth()
     const { isOpen, onOpen, onClose  } = useDisclosure()
 
+    console.log(listeJus.listeJus, listeJus, listeJus.length > 0)
+
     return (
       <>
-        <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
+        
+        { 
+            (listeJus.listeJus.length > 0) ?
+
+            <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
             _hover={{
             border: "1px solid black",
             bg: 'lightyellow',
             color:'black',
             
             }}
-        >
-            Passez votre commande
-        </Button>
+            >
+                Passez votre commande
+            </Button>
+
+            :
+            
+            <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
+                _hover={{
+                border: "1px solid black",
+                bg: 'lightyellow',
+                color:'black',
+                
+                }}
+                isDisabled
+            >
+                Patientez un instant...
+            </Button>
+
+        }
         
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} >
           <ModalOverlay  
@@ -105,6 +128,7 @@ export function ModalForm(listeJus : [], {...props}) {
             backgroundRepeat={['no-repeat', 'no-repeat', 'no-repeat']} 
             backgroundPosition={['center', 'center', 'center' ]}
           />
+        
           <ModalContent width={'350px'} height={'765px'} bgColor={'rgba(289,188,160,75%)'}>
             <ModalHeader><Heading textAlign={'center'} as='h3'>Finalisez votre commande</Heading></ModalHeader>
             <ModalCloseButton />
@@ -112,7 +136,7 @@ export function ModalForm(listeJus : [], {...props}) {
               <OrderForm lockWindow={onClose} openWindow={onOpen} listeJus = {listeJus} ></OrderForm>
             </ModalBody>
           </ModalContent>
-
+        
         </Modal> 
       </>
     )
@@ -182,7 +206,6 @@ function OrderForm(props:any){
     }
     
     const {myTokenInfo, token} = useAuth()
-    
     
     const formatFormData = (values) => {
         const jusId = getJusId(props.listeJus.listeJus, values.parfum)
@@ -291,6 +314,7 @@ function OrderForm(props:any){
             >
         
             { (formik) => (
+                
                 <Form>
         
                     <FormControl  height={'60px'} marginBottom={'25px'}>
@@ -372,7 +396,6 @@ function OrderForm(props:any){
                         
                     </Center>
                 </Form>
-        
             )}
         
             </Formik> 
@@ -395,17 +418,26 @@ function SimpleSlider() {
     var settings = {
       dots: true,
       infinite: true,
-      speed: 500,
+      speed: 5000,
       slidesToShow: 1,
       slidesToScroll: 1,
       adaptiveHeight : true,
-      row:2
+      row:2,
+      autoplay:true,
+      autoplaySpeed: 2000,
+      cssEase: "linear"
     };
     return (
       <Slider {...settings} >
         <Box width={'100%'} height={'100%'} >
           <Square mb={'15px'}>
-              <img src="/src/assets/anan.png" width={'200px'} height={'200px'}/>
+              <Image
+                  boxSize={'200px'}
+                  objectFit={'cover'}
+                  src="/src/assets/anan.png" 
+                  alt="Jus de fruits"
+                  boxShadow={'md'}
+              />
           </Square>
           <Center mb={'15px'}>
               <Text>La saveur spéciale d'Ananas frais!</Text>

@@ -30,26 +30,17 @@ import {
     Button,
     Center
 } from "@chakra-ui/react";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
+import {useAuth , AuthProvider} from "../AuthProvider"
 
 import MyCommandList from "./CommandPdf";
 
+import toast from 'react-hot-toast';
+
+import { PDFDownloadLink, Document, Page } from '@react-pdf/renderer';
  
 
 export const Command = () => {
-
-    //const fetchGetDataCommand =  fetch('', {})
-
-    const fetchModifyStatutCommand =  fetch('https://ventejus.newvision.cm/commande', {
-        method: 'PUT',
-        headers : {
-            "content-type" : 'application/json',
-            "Authorization" : `${sessionStorage.getItem('site')}`
-        }
-    })
-
-    /*useEffect({})*/
-
 
     return(
         <Box pt={'65px'} height={'932px'} pl={'13px'} pr={'13px'}>
@@ -57,7 +48,7 @@ export const Command = () => {
 
             <Box padding={'20px'}pl={'10px'} pr={'10px'} backgroundColor={"rgba(239,188,160,80%)"}>
 
-                <TableOfCommand></TableOfCommand>
+                <TableOfCommand />
 
                 <Center mt={'20px'}>
                     <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'}
@@ -69,23 +60,110 @@ export const Command = () => {
                     >
                         Imprimmer les commandes
                     </Button>
+
+                    <PDFDownloadLink document={<MyCommandList />} fileName="Test.pdf">
+                    {({loading, error}) => 
+                        loading? 'Loading document...': 'Download now!'
+                    }      
+                    </PDFDownloadLink>
                 </Center>
             </Box>
 
             <Box mt="110px" textAlign={'center'} height={'5%'} borderRadius={"10px"} border={"1px black solid"} bgColor={'rgba(232,178,178,30%)'} paddingTop={'10px'} >
                 Provided by @Saint
             </Box>
-            
         </Box>
-
-        
     )
 }
 export default Command
 
 
+
+
+type TableLineProps = {
+    id: string,
+    command: string,
+    action?: ReactElement
+ }
+const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
+
+    return(
+        <Tr key={id}>
+            <Td key={id+1}>{id}</Td>
+            <Td key={id+2} textAlign={'center'}>{command}</Td>
+            <Td key={id+3}>{action}</Td>
+        </Tr>
+    )
+}
+
+
+
 const TableOfCommand = () => {
 
+    const {myTokenInfo, token} = useAuth()
+    const[listeCommande, setListeCommande] = useState([])
+    //console.log(listeCommande)
+
+    const handleSetListCommande = (newList : []) =>{
+        alert(newList)
+        setListeCommande(newList);
+        
+    }
+
+    const fetchGetListeCommand = async () => { 
+        try{
+            const response = await fetch('https://ventejus.newvision.cm/commande', {
+                method: 'GET',
+                headers : {
+                    "Content-type" : 'application/json',
+                    Authorization : token
+                }
+            })
+
+            const res = await response.json()
+
+            if(response.ok){
+                console.log(res.commandes)
+                let data = res.commandes
+                setListeCommande(data)
+            }else{
+
+                if(response.status === 422) { throw new Error('Erreur 422') }
+                if(response.status === 400) { throw new Error('Erreur 400') }
+                if(response.status === 403) { throw new Error('Erreur 403') }
+
+                throw new Error(String(response.status))
+            }
+            
+        }catch(error){
+            console.log("Get Liste Commande", error);
+        }
+
+    }
+
+    useEffect(()=>{
+        fetchGetListeCommand()
+    }, [])
+
+    
+    //console.log("AOOOOO",listeCommande.length() )
+
+    //if(listeCommande.length > 0){
+    console.log(listeCommande)
+    const rows = listeCommande.map( (commande, index) => { 
+    return(
+        <TableLine 
+            key={commande.commandeId}
+            id = {commande.commandeId}
+            command = {`${commande.quantite} Saveur Lieu Client`}
+            action={< ActionModalButton command={commande} setComm={handleSetListCommande} listeCom ={listeCommande} />}
+        />
+    )
+
+    })
+    //}
+    console.log(rows)
+    
     return(
         <TableContainer  maxW={'100%'} height={'535px'} overflowY={'scroll'} borderRadius={'10px'} border={'1px  solid black'}>
             <Table size={'sm'}  variant={'striped'} borderRadius={'10px'}>
@@ -98,13 +176,15 @@ const TableOfCommand = () => {
                 </Thead>
 
                 <Tbody>
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
-                    <TableLine id='10' command="2 ananas pour Zap2 à Ekounou" action={< ActionModalButton/>} />
+                    {listeCommande.length > 0 ? 
+                        (rows)
+                    :
+                        (<Tr>
+                            <Td>  </Td>
+                            <Td colSpan={3} textAlign={'center'}>Donnée en cours de chargement ...  </Td>
+                            <Td> </Td>
+                        </Tr>)
+                    }
                 </Tbody>
             </Table>
         </TableContainer>
@@ -112,39 +192,70 @@ const TableOfCommand = () => {
 }
 
 
-type TableLineProps = {
-    id: string,
-    command: string,
-    action?: ReactElement
- }
-const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
+const ActionModalButton = (props : any ) => {
+    const [toastPutCommandId, setToastPutCommandId] = useState(undefined)
 
-    return(
-        <Tr>
-            <Td>{id}</Td>
-            <Td textAlign={'center'}>{command}</Td>
-            <Td>{action}</Td>
-        </Tr>
-    )
-}
-
-const ActionButton = () => {
-    return(
-        <Box>
-            <Button width={'100%'}>
-                <CheckIcon />
-            </Button>
-        </Box>
-    )
-}
-
-const ActionModalButton = () => {
+    const [statusPutRequest, setStatusPutRequest] = useState('normal')
 
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const {myTokenInfo, token} = useAuth()
+
+    const command = props.command
+    const setCommand = props.setComm
+    const listeCom = props.listeCom
+
+    
+    const fetchPostUpdateCommandStatus = async () => {
+        setStatusPutRequest('pending')
+        const dataSubmit = {
+            commandeId: command.commandeId,
+            statut: true
+        }
+        try{
+            const response = await fetch('https://ventejus.newvision.cm/commande', {
+                method: 'PUT',
+                headers:{
+                    'content-type': 'application/json',
+                    Authorization : token
+                },
+                body : JSON.stringify(dataSubmit)
+            })
+            const res = await response.json()
+
+            if(response.ok){
+                setStatusPutRequest('OK')
+
+                const newFilterListCommand =  listeCom.filter((commande)=>(commande.commandeId !== dataSubmit.commandeId ))
+                setCommand(newFilterListCommand)
+
+                //onClose()
+
+                console.log('ACTION GEREE')
+                console.log(listeCom)
+            }
+            else{
+                setStatusPutRequest('normal')
+            }
+
+        }catch(error){
+            setStatusPutRequest('normal')
+            console.log(error)
+            toast.error("Une erreur est survenue, l'action a échoué", {
+                id: toastPutCommandId,
+                duration: 6000
+            })
+
+        }  
+    }
+
+    useEffect(()=>{},[
+        statusPutRequest
+    ])
+
+    
   
     return (
       <>
-        {/*<Button onClick={onOpen}>Open Modal</Button>*/}
         <Box>
             <Button 
                 width={'100%'}
@@ -159,18 +270,112 @@ const ActionModalButton = () => {
           <ModalContent  ml={'15px'} mr={'15px'}>
             <ModalHeader>Confirmer la livraison</ModalHeader>
 
-            <ModalCloseButton />
+            { (statusPutRequest == "pending") && <ModalCloseButton isDisabled/>}
+            { (statusPutRequest == "OK") && <ModalCloseButton />}
+            { (statusPutRequest == "normal") && <ModalCloseButton />}
 
             <ModalBody pb={6}>
-              Etes vous certain que la commande X, a été effectuée avec succès ?
-              NB: Confirmation irrévocable 
+              <p>Etes vous certain que la commande avec l'id <span>{command.commandeId}</span>, a été livrée avec succès ? </p>
+              <span>NB:</span> Confirmation irrévocable !
             </ModalBody>
   
             <ModalFooter>
-              <Button colorScheme='blue' mr={3}>
-                Confirmer
-              </Button>
-              <Button onClick={onClose}>Annuler</Button>
+
+                { 
+                    (statusPutRequest == "normal") && (
+                        (<>
+                            <Button colorScheme='blue' mr={3}
+                                type="submit"
+                                onClick={ () => {
+                                    const toastPutCommand = toast.promise(fetchPostUpdateCommandStatus(), {
+                                        loading:"En attente de Réponse...",
+                                        success: 'Réponse Obtenue',
+                                        error: 'Erreur réseau'
+                                    },{
+                                        style: {
+                                            minWidth : '250px'
+                                        }
+                                    })
+    
+                                    setToastPutCommandId(toastPutCommand)
+                                }
+                            }
+                            >
+                                Confirmer
+                            </Button>
+    
+                            <Button onClick={onClose}>Annuler</Button>
+                        </>)
+                    )
+                    //statusPutRequest ?
+                }    
+
+                {
+                    (statusPutRequest == "pending") && (
+                        (<>
+                            <Button colorScheme='blue' mr={3}
+                                type="submit"
+                                onClick={ () => {
+                                    const toastPutCommand = toast.promise(fetchPostUpdateCommandStatus(), {
+                                        loading:"En attente de Réponse...",
+                                        success: 'Réponse Obtenue',
+                                        error: 'Erreur réseau'
+                                    },{
+                                        style: {
+                                            minWidth : '250px'
+                                        }
+                                    })
+    
+                                    setToastPutCommandId(toastPutCommand)
+                                }
+                            }
+                            isLoading
+                            >
+                                Confirmer
+                            </Button>
+                            <Button 
+                                onClick={onClose}
+                                isLoading
+                            >
+                                Annuler
+                            </Button>
+                        </>)
+                    )
+                }
+
+                {
+                    (statusPutRequest == 'OK')&&(
+                        (<>
+                            <Button colorScheme='blue' mr={3}
+                                type="submit"
+                                onClick={ () => {
+                                    const toastPutCommand = toast.promise(fetchPostUpdateCommandStatus(), {
+                                        loading:"En attente de Réponse...",
+                                        success: 'Réponse Obtenue',
+                                        error: 'Erreur réseau'
+                                    },{
+                                        style: {
+                                            minWidth : '250px'
+                                        }
+                                    })
+    
+                                    setToastPutCommandId(toastPutCommand)
+                                }
+                            }
+                            disabled
+                            >
+                                Confirmer
+                            </Button>
+                            <Button 
+                                onClick={onClose}
+                                disabled
+                            >
+                                Annuler
+                            </Button>
+                        </>)
+                    )
+                }
+                
             </ModalFooter>
 
           </ModalContent>

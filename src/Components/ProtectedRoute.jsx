@@ -9,9 +9,11 @@ import Login from "./Page/Login"
 
 export const ProtectedRoute = ({Children}) => {
     
-    const {isAuthenticated} = useAuth()
+    const {isAuthenticated, myTokenInfo} = useAuth()
 
-    return ( (!!isAuthenticated) ? <Outlet /> : <Navigate to='/login' />)
+    //|| (myTokenInfo.isMyTokenExpired && myTokenInfo.myDecodeToken.role[0].nomRole == "Client")
+
+    return ( ( /*!!isAuthenticated*/ (myTokenInfo.isMyTokenExpired )  ) ?   <Navigate to='/login' />: <Outlet />  )  //&& !!myTokenInfo.isMyTokenExpired
 }
 
 export default ProtectedRoute

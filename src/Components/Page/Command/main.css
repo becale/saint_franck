@@ -1,0 +1,77 @@
+*{
+    box-sizing: border-box;
+}
+
+.A4{
+    width: 21cm;
+    height: 29.7cm;
+    background-color: white;
+    border: black 1px solid;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1cm;
+}
+
+.container{
+    background-color: lightgrey;
+    height: 30cm;
+    width: 25cm;
+    padding-top: 1cm;
+}
+
+.factureContainer{
+    width: 19cm;
+    height: 5.04cm;
+    display: flex;
+    justify-content: space-between;
+}
+
+.line{
+    border: dashed 1px black;
+}
+
+.facture{
+    width: 9cm;
+    border: black 3px solid;
+    border-radius: 10px;
+    padding: 0.2cm;
+    background-image: url('Jus.PNG');
+}
+
+.verticalLine{
+    border: dashed 1px black;
+}
+
+.headFacture{
+    display: flex;
+    justify-content: space-between;
+}
+.checkBox{
+    /*display: inline-block;*/
+    width: 0.5cm;
+    height: 0.5cm;
+    border: 1px solid black;
+}
+
+.title{
+    text-decoration: underline;
+}
+
+.idcommandeItem1{
+    width: 40%;
+}
+.idcommandeItem2{
+    width: 60%;
+    color: red;
+}
+
+.containerField{
+    display: flex;
+}
+
+.id{
+    width: 20%;
+}
+.value{
+    width: 80%;
+}

@@ -5,9 +5,9 @@ import { useAuth } from "./AuthProvider";
 
 export const Anonymous = ({Children , ...rest}) => {
 
-    const {isAuthenticated} = useAuth()
+    const {isAuthenticated, myTokenInfo} = useAuth()
 
-    return !!isAuthenticated ? <Navigate to="/" /> : <Outlet /> 
+    return ( (/*!!isAuthenticated*/ myTokenInfo.isMyTokenExpired) ? <Outlet /> : <Navigate to="/" /> )
 }
 
 export default Anonymous

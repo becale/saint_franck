@@ -6,11 +6,13 @@ import {useAuth, AuthProvider} from '../AuthProvider'
 import { Navigate, useNavigate } from "react-router-dom";
 import { PDFDownloadLink, Document, Page } from '@react-pdf/renderer';
 import MyCommandList from "./CommandPdf";
+import { useEffect } from "react";
 
 export default function Home() {
     const {myTokenInfo} = useAuth()
     const navigate = useNavigate()
 
+   // useEffect(()=>{},[myTokenInfo.isMyTokenExpired])
     
     return(
         

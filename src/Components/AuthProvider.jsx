@@ -25,6 +25,8 @@ export const  AuthProvider = ({children}) => {
         'isMyTokenExpired': isMyTokenExpired
     }
 
+    //console.log(myDecodeToken.role[0].nomRole)
+
     const  loginAction =  async (data) => {
         setLoginState(true)
         setRequestatus()
@@ -40,7 +42,14 @@ export const  AuthProvider = ({children}) => {
             if (response.ok){
                 setToken(res.access_token)
                 sessionStorage.setItem("site", res.access_token);
-                navigate('/')
+
+                if ( myTokenInfo.myDecodeToken.role[0].nomRole == "Administrateur" || myTokenInfo.myDecodeToken.role[0].nomRole == "Client" ){
+                    navigate('/')
+                }
+                if ( myTokenInfo.myDecodeToken.role[0].nomRole == "Administrateur" || myTokenInfo.myDecodeToken.role[0].nomRole == "Livreur" ){
+                    navigate('/command-list')
+                }
+                
 
             } else {
                 //navigate('/')
@@ -53,7 +62,7 @@ export const  AuthProvider = ({children}) => {
         }
         catch(error){
             if(isNetworkError(error)){setNetworkError(true)}
-            //setLoginState(false)
+            setLoginState(false)
             console.log('Fetch', error)
             setRequestatus(error.message)
         }

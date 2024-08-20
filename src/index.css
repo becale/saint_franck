@@ -27,3 +27,9 @@
 
     font-size: '50px';
 }
+
+.overlay{
+    background-color: black;
+    z-index: 2;
+    position: absolute;
+}
