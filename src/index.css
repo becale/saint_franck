@@ -17,7 +17,7 @@
 .styleError{
     color: red;
     font-style: italic;
-    font-size: '11px';
+    font-size: 10px;
 }
 
 
@@ -32,4 +32,11 @@
     background-color: black;
     z-index: 2;
     position: absolute;
+}
+
+.tableHead{
+    font-family: 'Times-Roman','Courier New', Courier, monospace;
+    font-size: 13px;
+    font-weight: bolder;
+    color: brown;
 }

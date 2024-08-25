@@ -13,7 +13,10 @@ export const ProtectedRoute = ({Children}) => {
 
     //|| (myTokenInfo.isMyTokenExpired && myTokenInfo.myDecodeToken.role[0].nomRole == "Client")
 
-    return ( ( /*!!isAuthenticated*/ (myTokenInfo.isMyTokenExpired )  ) ?   <Navigate to='/login' />: <Outlet />  )  //&& !!myTokenInfo.isMyTokenExpired
+    //return ( ( /*!!isAuthenticated*/ (myTokenInfo.isMyTokenExpired )  ) ?   (<Navigate to='/login' />): <Outlet />  )  //&& !!myTokenInfo.isMyTokenExpired
+
+    return ( ( !!isAuthenticated /*(myTokenInfo.isMyTokenExpired )*/  ) ?   (<Outlet /> ): <Navigate to='/login' /> )  //&& !!myTokenInfo.isMyTokenExpired
+
 }
 
 export default ProtectedRoute

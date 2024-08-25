@@ -9,28 +9,26 @@ import MyCommandList from "./CommandPdf";
 import { useEffect } from "react";
 
 export default function Home() {
-    const {myTokenInfo} = useAuth()
-    const navigate = useNavigate()
 
-   // useEffect(()=>{},[myTokenInfo.isMyTokenExpired])
+    const {logOut} = useAuth()
+    /*useEffect(()=>{
+    const idSetTimeout = setTimeout(()=>{
+        logOut();
+        window.location.reload()
+    }, 60000)
+
+    return  ()=>{
+        clearTimeout(idSetTimeout)
+    }
+  })*/
+
     
     return(
         
         <>  
-            {/*{ 
-            myTokenInfo.myDecodeToken ? navigate('/')
-            : 
-            <>*/}
-                <Header></Header>
-                <Main></Main>
-                {/*<PDFDownloadLink document={<MyCommandList />} fileName="Commande.pdf">
-                    {({  url, loading, error }) =>
-                        loading ? 'Loading document...' : 'Download now!'
-                    }
-                </PDFDownloadLink>*/}
-                <Footer></Footer>
-            {/*</>
-            }*/}
+            <Header></Header>
+            <Main></Main>
+            <Footer></Footer>         
         </>
     )
 }

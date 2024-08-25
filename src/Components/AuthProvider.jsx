@@ -8,24 +8,14 @@ const AuthContext = createContext();
 
 export const  AuthProvider = ({children}) => {
     const navigate = useNavigate()
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState( null  || { ...decodeToken(sessionStorage.getItem('site')) } );
     const [token, setToken] = useState(sessionStorage.getItem('site') || "");
     const [requestStatus, setRequestatus] = useState()
     const [loginState, setLoginState] = useState(false) 
     const [statutRequette, setStatutRequette] = useState('')
     const [isnetworkError, setNetworkError] = useState('')
-
+    const [myTokenInfo, setMyTokenInfo] = useState({} || null)
     const isAuthenticated = !!token
-
-    const myDecodeToken = decodeToken(token || null)
-    const isMyTokenExpired = isExpired(token || null) 
-
-    const myTokenInfo = {
-        'myDecodeToken' : myDecodeToken,
-        'isMyTokenExpired': isMyTokenExpired
-    }
-
-    //console.log(myDecodeToken.role[0].nomRole)
 
     const  loginAction =  async (data) => {
         setLoginState(true)
@@ -43,16 +33,21 @@ export const  AuthProvider = ({children}) => {
                 setToken(res.access_token)
                 sessionStorage.setItem("site", res.access_token);
 
-                if ( myTokenInfo.myDecodeToken.role[0].nomRole == "Administrateur" || myTokenInfo.myDecodeToken.role[0].nomRole == "Client" ){
-                    navigate('/')
+                const myDecodeToken = decodeToken(res.access_token || null)
+                console.log(myDecodeToken)
+                const isMyTokenExpired = isExpired(res.access_token || null)
+                setMyTokenInfo({...myTokenInfo,myDecodeToken,isMyTokenExpired} )
+                setUser({...myDecodeToken})
+
+                if ( myDecodeToken.role[0].nomRole == "Administrateur" || myDecodeToken.role[0].nomRole == "Client" ){
+                    return <Navigate to={'/'}/> //navigate('/')
                 }
-                if ( myTokenInfo.myDecodeToken.role[0].nomRole == "Administrateur" || myTokenInfo.myDecodeToken.role[0].nomRole == "Livreur" ){
-                    navigate('/command-list')
+                if ( myDecodeToken.role[0].nomRole == "Administrateur" || myDecodeToken.role[0].nomRole == "Livreur" ){
+                    return <Navigate to={'/command-list'} /> //navigate('/command-list')
                 }
                 
 
             } else {
-                //navigate('/')
                 if(response.status === '422') { throw new Error('Erreur 422') }
                 if(response.status === '400') { throw new Error('Erreur 400') }
                 if(response.status === '403') { throw new Error('Erreur 403') }
@@ -63,19 +58,19 @@ export const  AuthProvider = ({children}) => {
         catch(error){
             if(isNetworkError(error)){setNetworkError(true)}
             setLoginState(false)
+            
             console.log('Fetch', error)
             setRequestatus(error.message)
         }
     }
 
     const logOut = () => {
-        /*setUser(null);
-        setToken("");
-        sessionStorage.removeItem("site");
-        navigate("/login");*/
+        sessionStorage.removeItem('site')
+        setMyTokenInfo({})
+        return <Navigate to={'/login'}/>
       };
 
-    return <AuthContext.Provider value={{myTokenInfo, isAuthenticated,loginState, user, requestStatus,isnetworkError, token, loginAction, logOut}}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={{myTokenInfo, isAuthenticated,loginState, user, requestStatus,isnetworkError, token,setUser, loginAction, logOut}}>{children}</AuthContext.Provider>
 };
 
 

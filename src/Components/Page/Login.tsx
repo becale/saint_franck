@@ -4,8 +4,6 @@ import  * as Yup from 'yup'
 import {Image,FormControl,FormLabel, Button,VStack, Box, Center, Input, Heading, InputGroup, InputRightElement, useToast, Flex} from '@chakra-ui/react'
 import { useFormik } from "formik"
 import {useAuth} from "../AuthProvider"
-import {Hourglass, InfinitySpin} from 'react-loader-spinner'
-//import loadimg from '../../assets/'
 
 
 
@@ -25,28 +23,22 @@ export  default function Login()  {
     }
     const SpinerOverlay = () => {
         return(
-            <Box
-                w={'500px'}
+            <Box as={Center}
+                w={'100%'}
                 m={'0'}
                 position={'absolute'} 
                 zIndex={9}  
                 left={'50%'} 
                 top={'50%'}
                 transform={'translate(-50%, -50%)'}
-                backgroundColor={'lightcyan'} 
-
+                backgroundColor={'rgba(0,0,1,0.4)'} 
                 paddingLeft={'auto'}
                 paddingRight={'auto'}
+
+                height={'100%'}
             > 
-                {/*<InfinitySpin
-                    //visible = true
-                    width="500"
-                    height="500"
-                    color="#4fa94d"
-                    ariaLabel="infinity-spin-loading"
-                />*/}
-                <Box width={'100px'} height={'100px'}>
-                    <Image src="src/assets/loadimg.gif" />
+                <Box width={'60px'} height={'50px'} margin={'auto'} borderRadius={'50%'}>
+                    <Image src="src/assets/loadimg.gif" width={'100%'} borderRadius={'25%'}/>
                 </Box>
             </Box>
         )
@@ -75,7 +67,7 @@ export  default function Login()  {
             <Box >
                 <form onSubmit= {formik.handleSubmit} id="form">
                     <Box paddingLeft={'26px'} paddingRight={'26px'} paddingTop={'281px'}>
-                            <Box as={VStack} height={'400px'} minW={'372px'} backgroundColor={"rgba(239,188,160,75%)"} >
+                            <Box as={VStack} height={'400px'} minW={'300px'} backgroundColor={"rgba(239,188,160,75%)"} border={'black 1px solid'} borderRadius={'25px'} boxShadow={"5px 5px 5px 3px rgba(0,0,1,0.3)"}>
                                 <Box paddingLeft={'12px'} paddingRight={'12px'} paddingTop={'21px'}>
                                     <Heading as='h1'>
                                         Connectez-vous!
@@ -129,61 +121,32 @@ export  default function Login()  {
                                             bg: 'lightyellow',
                                             color:'black',
                                         }}
-
-                                        /*onClick={() => {
-                                            const data = new FormData()
-                                            data.append('username', formik.values.pseudo)
-                                            data.append('password', formik.values.password)
-                                            
-
-                                            toast.promise( handleSubmit(formik.values)
-                                            
-                                            , {
-                                                success: { title: 'Promise resolved', description: 'Looks great' },
-                                                error: { title: 'Promise rejected', description: 'Something wrong' },
-                                                loading: { title: 'Promise pending', description: 'Please wait' },
-                                              })
-                                            
-                                        }}*/
                                     >
                                         Se Connecter
                                         </Button>
                                     :   
                                         <Button 
-                                    type="submit"
-                                    width={'280px'} 
-                                    borderRadius={'25px'} 
-                                    bgColor={'rgba(52,42,42,100%)'} 
-                                    color={'white'} 
-                                    border={'1px white solid'}
-                                    _hover={{
-                                        border: "1px solid black",
-                                        bg: 'lightyellow',
-                                        color:'black',
-                                    }}
+                                            type="submit"
+                                            width={'280px'} 
+                                            borderRadius={'25px'} 
+                                            bgColor={'rgba(52,42,42,100%)'} 
+                                            color={'white'} 
+                                            border={'1px white solid'}
+                                            _hover={{
+                                                border: "1px solid black",
+                                                bg: 'lightyellow',
+                                                color:'black',
+                                            }}
+                                            boxShadow={"1px 1px 2px 3px rgba(0,0,1, 0.3)"}
 
-                                    /*onClick={() => {
-                                        const data = new FormData()
-                                        data.append('username', formik.values.pseudo)
-                                        data.append('password', formik.values.password)
-                                        
-
-                                        toast.promise( handleSubmit(formik.values)
-                                        
-                                        , {
-                                            success: { title: 'Promise resolved', description: 'Looks great' },
-                                            error: { title: 'Promise rejected', description: 'Something wrong' },
-                                            loading: { title: 'Promise pending', description: 'Please wait' },
-                                          })
-                                        
-                                    }}*/
+        
                                 >
                                     Se Connecter
                                         </Button>
                                     }  
 
                                         
-                                    </Center>
+                                </Center>
 
                                 </Box>
                             </Box>
@@ -201,6 +164,10 @@ export  default function Login()  {
         </Box>
     )
 }
+
+//left={'50%'} 
+//top={'50%'}
+//transform={'translate(-50%, -50%)'}
 
 
 

@@ -24,7 +24,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 
 export const Main = () =>{
-    const {isAuthenticated, token, myTokenInfo} = useAuth()
+    const {isAuthenticated, token, myTokenInfo, logOut} = useAuth()
     const [listeJus, setListeJus] = useState({})
 
     const fetchDataGetListeJus =  async () => {
@@ -42,8 +42,6 @@ export const Main = () =>{
         
                 if(response.ok){
                     setListeJus(res)
-    
-                    console.log('Check', isListeJus)
                     setStatutRequeteListeJus(true)
                 }
                 else{
@@ -60,7 +58,7 @@ export const Main = () =>{
     useEffect(() =>{
         fetchDataGetListeJus()
     }, [])
-
+    
 
     const notify = () => toast('Here is your toast.')
     const [isListeJus, setStatutRequeteListeJus] = useState(false)
@@ -68,8 +66,8 @@ export const Main = () =>{
 
     
     return(
-        <Box height={'70%'} padding={'10px'}>
-            <Box width={'350px'} margin={'0 auto'} backgroundColor={"rgba(239,188,160,60%)"} paddingTop={'10px'}>
+        <Box height={'70%'} paddingLeft={'25px'} paddingRight={'25px'}>
+            <Box width={'300px'} margin={'0 auto'} backgroundColor={"rgba(239,188,160,60%)"} paddingTop={'10px'} borderRadius={'25px'} border={'0.5px solid black'}>
                 <SimpleSlider></SimpleSlider>
             </Box>
             <Center  margin={'0 auto'} marginTop={'80px'} >
@@ -83,18 +81,16 @@ export default Main
 
 
 export function ModalForm(listeJus : [], {...props}) {
-
-    const {isAuthenticated} = useAuth()
+    const [commandOverlay, setCommandOverlay] = useState(false)
+    const {isAuthenticated, myTokenInfo} = useAuth()
     const { isOpen, onOpen, onClose  } = useDisclosure()
-
-    console.log(listeJus.listeJus, listeJus, listeJus.length > 0)
 
     return (
       <>
         
         { 
             (listeJus.listeJus.length > 0) ?
-
+            
             <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
             _hover={{
             border: "1px solid black",
@@ -105,9 +101,7 @@ export function ModalForm(listeJus : [], {...props}) {
             >
                 Passez votre commande
             </Button>
-
             :
-            
             <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
                 _hover={{
                 border: "1px solid black",
@@ -119,7 +113,6 @@ export function ModalForm(listeJus : [], {...props}) {
             >
                 Patientez un instant...
             </Button>
-
         }
         
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} >
@@ -128,12 +121,13 @@ export function ModalForm(listeJus : [], {...props}) {
             backgroundRepeat={['no-repeat', 'no-repeat', 'no-repeat']} 
             backgroundPosition={['center', 'center', 'center' ]}
           />
+          {(commandOverlay == true) ? <SpinerOverlay /> : ''}
         
-          <ModalContent width={'350px'} height={'765px'} bgColor={'rgba(289,188,160,75%)'}>
+          <ModalContent width={'300px'}  height={'800px'} bgColor={'rgba(289,188,160,75%)'} border={'black solid 0.5px'} borderRadius={'25px'}>
             <ModalHeader><Heading textAlign={'center'} as='h3'>Finalisez votre commande</Heading></ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <OrderForm lockWindow={onClose} openWindow={onOpen} listeJus = {listeJus} ></OrderForm>
+              <OrderForm lockWindow={onClose} openWindow={onOpen} listeJus = {listeJus} setCommandOverlay={setCommandOverlay} ></OrderForm>
             </ModalBody>
           </ModalContent>
         
@@ -158,6 +152,7 @@ function OrderForm(props:any){
 
     const [responseValue, setResponseValue] = useState('')
     const [toastPostCommandId, setToastPostCommandId] = useState(undefined)
+    const {token, myTokenInfo, setUser,user} = useAuth()
 
     type formData = {
         utilisateurId : number,
@@ -205,33 +200,32 @@ function OrderForm(props:any){
         return ((justable.indexOf(saveur) > 0) ? justable[justable.indexOf(saveur)-1] : -10)
     }
     
-    const {myTokenInfo, token} = useAuth()
-    
     const formatFormData = (values) => {
         const jusId = getJusId(props.listeJus.listeJus, values.parfum)
 
         let livraison
-        if (values.adresse == "" || values.adressedefaut == true ) { livraison = myTokenInfo.myDecodeToken.lieuLivraison }
-        if (values.adressedefaut == false) {livraison = myTokenInfo.myDecodeToken.lieuLivraison}
-        if (values.adresse !== "") { livraison =values.adresse }
-        if (values.adresse !== "" && values.adressedefaut == true) {livraison = `${myTokenInfo.myDecodeToken.lieuLivraison} ${values.adresse}`}
+        if (values.adresse == "" || values.adressedefaut == true ) { livraison = user.lieuLivraison }
+        if (values.adressedefaut == false) {livraison = user.lieuLivraison}
+        if (values.adresse !== "") { livraison = values.adresse }
+        if (values.adresse !== "" && values.adressedefaut == true) {livraison = `${user.lieuLivraison} ${values.adresse}`}
         
 
         
         const data : formData =  {
-            utilisateurId : myTokenInfo.myDecodeToken.id, 
+            utilisateurId : user.id, 
             jusId : jusId, 
             quantite : values.quantite, 
             dateLivraison : values.date,
             periodeLivraison : values.periode,
             lieuLivraison : livraison
         }
-
-
         return data
     }
 
     const fetchDataPostCommand = async (data) => {
+
+        props.setCommandOverlay(true)
+
         try{
             const response = await fetch('https://ventejus.newvision.cm/commande', {
                 method: 'POST',
@@ -245,11 +239,18 @@ function OrderForm(props:any){
             const res  = await response.json()
 
             if(response.ok){
-                props.lockWindow()
+
                 toast.success('Votre Commande a été réalisée avec Succès', {
                     id: toastPostCommandId,
                     duration: 6000
                 })
+                props.lockWindow()
+                props.setCommandOverlay(false)
+                
+                const montantcomtpte = {
+                    montantCompte : String(res.client.montant)
+                }
+                setUser( {...user, ...montantcomtpte} )
 
             }else{
                 toast.error('Une erreur est survenue, Votre commande a échoué', {
@@ -262,6 +263,7 @@ function OrderForm(props:any){
             }
         }catch(error){
             props.lockWindow()
+            props.setCommandOverlay(false)
             toast.error('Erreur réseau, votre commande a échoué', {
                     id: toastPostCommandId,
                     duration : 6000
@@ -270,11 +272,8 @@ function OrderForm(props:any){
         }
     }
 
-    useEffect(()=>{
-        //fetchDataPostCommand(formik.values)
-    }, [])
 
-    
+
     return(
         ((
             <Formik 
@@ -322,18 +321,18 @@ function OrderForm(props:any){
                     <SelectJuice label='Jus'name='parfum'></SelectJuice>
                     </FormControl>
         
-                    <FormControl  height={'50px'} marginBottom={'25px'}  >
+                    <FormControl  height={'50px'} marginBottom={'45px'}  >
                         <FormLabel>Quantité</FormLabel>
                         <Field component={NumberInput} >
                         </Field>
                         <Box className="stylebutton"></Box>
                     </FormControl>
         
-                    <FormControl   marginBottom={'25px'}>
+                    <FormControl   marginBottom={'15px'}>
                         <ToggleInput name="adresse"></ToggleInput>
                     </FormControl>
         
-                    <FormControl  height={'50px'} marginBottom={'25px'}>
+                    <FormControl  height={'50px'} marginBottom={'40px'}>
                         <FormLabel>Date de livraison</FormLabel>
                         <InputDate label={'date'}></InputDate>
                     </FormControl>
@@ -343,16 +342,17 @@ function OrderForm(props:any){
                         <RadioGroupOf2 label='preference'></RadioGroupOf2>
                     </FormControl>
         
-                    <Center as={VStack } pt={'30px'} spacing={'20px'}>
+                    <Center as={VStack } pt={'15px'} spacing={'20px'}>
 
-                        <Text>Vous disposez actuellement de  <span className="styleamount">{myTokenInfo.myDecodeToken.montantCompte}</span> crédit(s)</Text>
-                        <Heading size={'lg'}>Total :  <span className="styleamount">{formik.values.quantite}</span> Crédit(s)</Heading>
+                        <Box textAlign={'center'}>Vous disposez actuellement de  <br /><span className="styleamount">{/*myTokenInfo.myDecodeToken.montantCompte*/}{user.montantCompte} </span> crédit(s)</Box>
+
+                        <Heading size={'lg'}>Total : <span className="styleamount">{formik.values.quantite}</span> Crédit(s)</Heading>
 
                     </Center>
         
                     <Center mt={'30px'}>
 
-                        {(formik.values.parfum == '' || formik.values.quantite == '' || formik.values.date == '' || formik.values.periode == '')?
+                        {( formik.values.parfum == '' || formik.values.quantite == '' || formik.values.date == '' || formik.values.periode == '' || (Number(user.montantCompte)<=0) || ( (Number(user.montantCompte) < Number(formik.values.quantite))) )?
                             <Button 
                                 isDisabled  
                                 
@@ -370,14 +370,11 @@ function OrderForm(props:any){
                                     color:'black',
                             }}  
                         >
-                            Commander
+                            { ( (user.montantCompte <= 0 ) || ( Number(user.montantCompte) < Number(formik.values.quantite) ) )? "Solde insuffisant" : 'Commander'}
                             </Button>
                         :
                             <Button 
-                                disabled  
-
                                 type="submit"
-            
                                 width={'280px'} 
                                 borderRadius={'25px'} 
                                 bgColor={'rgba(52,42,42,100%)'} 
@@ -418,7 +415,7 @@ function SimpleSlider() {
     var settings = {
       dots: true,
       infinite: true,
-      speed: 5000,
+      speed: 1000,
       slidesToShow: 1,
       slidesToScroll: 1,
       adaptiveHeight : true,
@@ -427,16 +424,57 @@ function SimpleSlider() {
       autoplaySpeed: 2000,
       cssEase: "linear"
     };
+
+    //console.log(listeJus.listeJus)
+
+    /*let sliderListeJus = []
+
+    if(listeJus.listeJus.length > 0){
+        sliderListeJus = listeJus.listeJus.map((jus, index) =>{
+        return(
+            <Box width={'100%'} height={'100%'} key={index} >
+                <Square mb={'15px'}>
+                    <Image
+                        boxSize={'180px'}
+                        objectFit={'cover'}
+                        src="/src/assets/anan.png" 
+                        alt="Jus de fruits"
+                        boxShadow={'2px 2px 3px 6px rgba(0,0,5,0.6)'}
+                        borderRadius={'25px'}
+                    />
+                </Square>
+                <Center mb={'15px'}>
+                <Text>"La saveur spéciale d'Ananas frais! `${jus.saveur}`"</Text>
+                </Center>
+                <Center mb={'20px'}>
+                <Text fontSize={'lg'} fontWeight={'bold'} fontFamily={'cursive'} color={'red'}>
+                  1 Crédit
+                </Text>
+                </Center>
+            </Box>
+        )
+
+    })}
+
+    console.log(sliderListeJus)*/
+
     return (
       <Slider {...settings} >
+
+        {/*
+            (listeJus.listeJus.length > 0) ?
+
+        {sliderListeJus}
+        :*/}
         <Box width={'100%'} height={'100%'} >
           <Square mb={'15px'}>
               <Image
-                  boxSize={'200px'}
+                  boxSize={'180px'}
                   objectFit={'cover'}
                   src="/src/assets/anan.png" 
                   alt="Jus de fruits"
-                  boxShadow={'md'}
+                  boxShadow={'2px 2px 3px 6px rgba(0,0,5,0.6)'}
+                  borderRadius={'25px'}
               />
           </Square>
           <Center mb={'15px'}>
@@ -448,16 +486,17 @@ function SimpleSlider() {
               </Text>
           </Center>
         </Box>
-        
+
         <Box width={'100%'} height={'100%'} >
-          <Square mb={'15px'} borderRadius={'15px'}>
+          <Square mb={'15px'}>
               <Image
-                  boxSize={'200px'}
+                  boxSize={'180px'}
                   objectFit={'cover'}
                   src="/src/assets/anan.png" 
                   alt="Jus de fruits"
-                  boxShadow={'md'}
-              />    
+                  boxShadow={'2px 2px 3px 6px rgba(0,0,5,0.6)'}
+                  borderRadius={'25px'}
+              />
           </Square>
           <Center mb={'15px'}>
               <Text>La saveur spéciale d'Ananas frais!</Text>
@@ -589,7 +628,7 @@ function SimpleSlider() {
             <FormLabel>Lieu de livraison</FormLabel>
             <VStack>
                 <Flex>
-                    <Box pr={'150px'} pt={'10px'}> 
+                    <Box pr={'100px'} pt={'5px'}> 
                         <Checkbox 
                             checked
                             {...field}
@@ -608,7 +647,6 @@ function SimpleSlider() {
                             border={'none'} 
                             focusBorderColor="white" 
                             placeholder="Ekounou-Carrefour +237697989850"
-
                             {...field}
                         /> 
                 }
@@ -617,5 +655,28 @@ function SimpleSlider() {
                 ) : null}
             </VStack>
         </>
+    )
+}
+
+const SpinerOverlay = () => {
+    return(
+        <Box as={Center}
+            w={'100%'}
+            m={'0'}
+            position={'absolute'} 
+            zIndex={10000}  
+            left={'50%'} 
+            top={'50%'}
+            transform={'translate(-50%, -50%)'}
+            backgroundColor={'rgba(0,0,1,0.4)'} 
+            paddingLeft={'auto'}
+            paddingRight={'auto'}
+
+            height={'100%'}
+        > 
+            <Box width={'60px'} height={'50px'} margin={'auto'} borderRadius={'50%'}>
+                <Image src="src/assets/loadimg.gif" width={'100%'} borderRadius={'25%'}/>
+            </Box>
+        </Box>
     )
 }

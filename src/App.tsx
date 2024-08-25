@@ -18,18 +18,24 @@ import { PDFViewer, usePDF  } from '@react-pdf/renderer'
 
 import { BrowserRouter } from 'react-router-dom'
 import  {AuthProvider, useAuth} from "./Components/AuthProvider"
-
+import { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
 
-  /*const {isAuthenticated} = useAuth()
-  console.log(isAuthenticated)*/
+  const listeCommande = [
+    {
+      commandeId: 15,
+      dateCommande: "2024-08-24T10:11:33",
+      dateLivraison: "2024-08-26T00:00:00",
+    },
+  ]
 
   return (
     <>
         <Box className='App' 
-            height={'932px'}   
+            height={'95vh'}   //932px
+            minHeight={'932px'}
             bgImage={["url('src/assets/backimg.png')", "url('src/assets/backimgmd.png')", "url('src/assets/backimglg.png')" ]} 
             backgroundRepeat={['no-repeat', 'no-repeat', 'no-repeat']} 
             backgroundPosition={['center', 'center', 'center' ]}
@@ -37,7 +43,12 @@ function App() {
             
             <Routes>
               
-              <Route path="/command-list/pdf" element={<MyCommandList/>} />
+              <Route path="/command-list/pdf" element={
+                  <PDFViewer style={{ width: "100%", height: "800px" }}>
+                    <MyCommandList  listeCommande={listeCommande}/>
+                  </PDFViewer>
+                } 
+              />
 
               <Route element={ <Anonymous /> }>
                 <Route path='/login' element={<Login/> }/>

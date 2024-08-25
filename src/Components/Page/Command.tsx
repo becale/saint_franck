@@ -32,24 +32,67 @@ import {
 } from "@chakra-ui/react";
 import { ReactElement, useEffect, useState } from "react";
 import {useAuth , AuthProvider} from "../AuthProvider"
-
 import MyCommandList from "./CommandPdf";
-
-import toast from 'react-hot-toast';
-
+import toast, { Toaster } from 'react-hot-toast';
 import { PDFDownloadLink, Document, Page } from '@react-pdf/renderer';
  
 
+
 export const Command = () => {
 
+    const {logOut, token} = useAuth()
+    const[listeCommande, setListeCommande] = useState([])
+    const [apiResponse, setApiResponse] = useState(null)
+
+    const handleSetListCommande = (newList : []) =>{
+        setListeCommande(newList);
+    }
+
+    const fetchGetListeCommand = async () => { 
+        try{
+            const response = await fetch('https://ventejus.newvision.cm/commande', {
+                method: 'GET',
+                headers : {
+                    "Content-type" : 'application/json',
+                    Authorization : token
+                }
+            })
+
+            const res = await response.json()
+
+            if(response.ok){
+                console.log(res.commandes)
+                let data = res.commandes
+                setListeCommande(data)
+            }else{
+
+                if(response.status === 422) { throw new Error('Erreur 422') }
+                if(response.status === 400) { throw new Error('Erreur 400') }
+                if(response.status === 403) { throw new Error('Erreur 403') }
+
+                throw new Error(String(response.status))
+            }
+            
+        }catch(error){
+            console.log("Get Liste Commande", error);
+            console.log('LISTE COMMANDE', listeCommande)
+        }
+
+    }
+
+    useEffect(()=>{
+        fetchGetListeCommand()
+    }, [])
+
+
     return(
+        <>
         <Box pt={'65px'} height={'932px'} pl={'13px'} pr={'13px'}>
             <Heading textAlign={'center'}>Liste des Commandes <br />non livrées</Heading>
 
-            <Box padding={'20px'}pl={'10px'} pr={'10px'} backgroundColor={"rgba(239,188,160,80%)"}>
+            <Box padding={'20px'}pl={'10px'} pr={'10px'} borderRadius={'20px'} border={"1px solid black"} backgroundColor={"rgba(239,188,160,80%)"}>
 
-                <TableOfCommand />
-
+                <TableOfCommand listeCommande = {listeCommande} handleSetListCommande={handleSetListCommande} />
                 <Center mt={'20px'}>
                     <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'}
                         _hover={{
@@ -58,14 +101,14 @@ export const Command = () => {
                         color:'black',
                         }}
                     >
-                        Imprimmer les commandes
+                        <PDFDownloadLink document={<MyCommandList listeCommande={listeCommande} />} 
+                        fileName="Test.pdf"  
+                        >
+                            {({loading, error}) => 
+                                loading? 'Chargement du document...': 'Imprimmer les commandes'
+                            }      
+                        </PDFDownloadLink>
                     </Button>
-
-                    <PDFDownloadLink document={<MyCommandList />} fileName="Test.pdf">
-                    {({loading, error}) => 
-                        loading? 'Loading document...': 'Download now!'
-                    }      
-                    </PDFDownloadLink>
                 </Center>
             </Box>
 
@@ -73,11 +116,14 @@ export const Command = () => {
                 Provided by @Saint
             </Box>
         </Box>
+        
+        <Toaster 
+            position="bottom-center"
+        />
+        </>
     )
 }
 export default Command
-
-
 
 
 type TableLineProps = {
@@ -90,7 +136,7 @@ const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
     return(
         <Tr key={id}>
             <Td key={id+1}>{id}</Td>
-            <Td key={id+2} textAlign={'center'}>{command}</Td>
+            <Td key={id+2} textAlign={'center'} fontSize={'12px'}>{command}</Td>
             <Td key={id+3}>{action}</Td>
         </Tr>
     )
@@ -98,16 +144,16 @@ const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
 
 
 
-const TableOfCommand = () => {
+const TableOfCommand = (props:any ) => {
 
-    const {myTokenInfo, token} = useAuth()
-    const[listeCommande, setListeCommande] = useState([])
-    //console.log(listeCommande)
-
-    const handleSetListCommande = (newList : []) =>{
-        alert(newList)
+    {/*const {myTokenInfo, token} = useAuth()
+    const[listeCommande, setListeCommande] = useState([])*/}
+    const [apiResponse, setApiResponse] = useState(null)
+    const listeCom = props.listeCommande//listeCommande.listeCommande 
+    console.log(listeCom)
+    const handleSetListCom = props.handleSetListCommande//handleSetListCommande.handleSetListCommande
+    {/*const handleSetListCommande = (newList : []) =>{
         setListeCommande(newList);
-        
     }
 
     const fetchGetListeCommand = async () => { 
@@ -139,52 +185,64 @@ const TableOfCommand = () => {
             console.log("Get Liste Commande", error);
         }
 
-    }
+    }*/}
 
-    useEffect(()=>{
-        fetchGetListeCommand()
-    }, [])
 
-    
-    //console.log("AOOOOO",listeCommande.length() )
-
-    //if(listeCommande.length > 0){
-    console.log(listeCommande)
-    const rows = listeCommande.map( (commande, index) => { 
+    const rows = listeCom.map( (commande, index) => { 
     return(
         <TableLine 
             key={commande.commandeId}
             id = {commande.commandeId}
-            command = {`${commande.quantite} Saveur Lieu Client`}
-            action={< ActionModalButton command={commande} setComm={handleSetListCommande} listeCom ={listeCommande} />}
+            command = {`${commande.quantite}-${commande.jus.saveur}(s)-pour-${commande.client.pseudo}-vers-${commande.lieuLivraison} `}
+            action={< ActionModalButton command={commande} setComm={handleSetListCom} listeCom ={listeCom} />}
         />
     )
 
     })
-    //}
-    console.log(rows)
-    
+ 
     return(
-        <TableContainer  maxW={'100%'} height={'535px'} overflowY={'scroll'} borderRadius={'10px'} border={'1px  solid black'}>
+        <TableContainer  maxW={'100%'} height={'535px'} overflowY={'scroll'} borderRadius={'10px'} border={'1px  solid white'}>
             <Table size={'sm'}  variant={'striped'} borderRadius={'10px'}>
                 <Thead>
                     <Tr>
-                        <Th width={"5%"}>ID</Th>
-                        <Th width={"50%"} textAlign={'center'}>DETAILS COMMANDE</Th>
-                        <Th width={"45%"} textAlign={'center'}>ACTIONS</Th>
+                        <Th width={"5%"} fontSize={'13px'} color={'brown'}  >ID</Th>
+                        <Th width={"50%"}  fontSize={'13px'} color={'brown'} textAlign={'center'}>DETAILS COMMANDE</Th>
+                        <Th width={"45%"}  fontSize={'13px'} color={'brown'} textAlign={'center'}>ACTIONS</Th>
                     </Tr>
                 </Thead>
 
                 <Tbody>
-                    {listeCommande.length > 0 ? 
-                        (rows)
-                    :
-                        (<Tr>
-                            <Td>  </Td>
-                            <Td colSpan={3} textAlign={'center'}>Donnée en cours de chargement ...  </Td>
-                            <Td> </Td>
-                        </Tr>)
+                    {listeCom.length > 0 && rows}
+
+                    {listeCom.length < 0 && (
+                            <Tr>
+                                <Td>  </Td>
+                                <Td colSpan={3} textAlign={'center'}>Donnée en cours de chargement ...  </Td>
+                                <Td> </Td>
+                            </Tr>
+                        )
                     }
+
+                    {listeCom.length == 0 && (
+                            <>
+                                <Tr>
+                                    <Td></Td>
+                                    <Td></Td>
+                                    <Td></Td>
+                                </Tr>
+                                <Tr>
+                                    <Td></Td>
+                                    <Td ></Td>
+                                    <Td></Td>
+                                </Tr>
+                                <Tr>
+                                    <Td></Td>
+                                    <Td colSpan={3} textAlign={'center'}>Pas de commandes actuellement..</Td>
+                                    <Td></Td>
+                                </Tr>
+                            </>
+                        )
+                    }  
                 </Tbody>
             </Table>
         </TableContainer>
@@ -224,14 +282,14 @@ const ActionModalButton = (props : any ) => {
 
             if(response.ok){
                 setStatusPutRequest('OK')
+                toast.success("La commande a été validée avec succès", {
+                    id: toastPutCommandId,
+                    duration: 6000
+                })
 
                 const newFilterListCommand =  listeCom.filter((commande)=>(commande.commandeId !== dataSubmit.commandeId ))
+                console.log("TEST set",setCommand)
                 setCommand(newFilterListCommand)
-
-                //onClose()
-
-                console.log('ACTION GEREE')
-                console.log(listeCom)
             }
             else{
                 setStatusPutRequest('normal')
