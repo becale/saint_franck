@@ -1,6 +1,4 @@
 
-import { Main } from "../Main";
-import {Footer} from '../Footer';
 import  {CheckIcon } from "@chakra-ui/icons";
 
 import {
@@ -18,31 +16,28 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
-    TableCaption,
     TableContainer,
     Box,
     Heading,
-    HStack,
     Button,
     Center
 } from "@chakra-ui/react";
 import { ReactElement, useEffect, useState } from "react";
-import {useAuth , AuthProvider} from "../AuthProvider"
+import {useAuth} from "../AuthProvider"
 import MyCommandList from "./CommandPdf";
 import toast, { Toaster } from 'react-hot-toast';
-import { PDFDownloadLink, Document, Page } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
  
+
 
 
 export const Command = () => {
 
     const {logOut, token} = useAuth()
     const[listeCommande, setListeCommande] = useState([])
-    const [apiResponse, setApiResponse] = useState(null)
 
     const handleSetListCommande = (newList : []) =>{
         setListeCommande(newList);
@@ -81,8 +76,35 @@ export const Command = () => {
     }
 
     useEffect(()=>{
-        fetchGetListeCommand()
-    }, [])
+        const getCommandeTimer = setInterval(()=>{
+            fetchGetListeCommand()
+        }, 2*60*1000)
+
+        return () =>{ clearInterval(getCommandeTimer) }
+    },)
+
+    useEffect(()=>{
+        const idSetTimeout = setTimeout(()=>{
+            logOut();
+            window.location.reload()
+        }, 10*60*1000)
+    
+        return  ()=>{
+            clearTimeout(idSetTimeout)
+        }
+    })
+
+    useEffect(()=>{
+        const idSetTimeoutAlert = setTimeout(()=>{
+            toast.success(`Vous serez déconnecté dans 5 minutes`, { 
+                duration: 6000
+            })
+        }, 5*60*1000)
+    
+        return  ()=>{
+            clearTimeout(idSetTimeoutAlert)
+        }
+    })
 
 
     return(
@@ -104,7 +126,7 @@ export const Command = () => {
                         <PDFDownloadLink document={<MyCommandList listeCommande={listeCommande} />} 
                         fileName="Test.pdf"  
                         >
-                            {({loading, error}) => 
+                            {({loading}) => 
                                 loading? 'Chargement du document...': 'Imprimmer les commandes'
                             }      
                         </PDFDownloadLink>
@@ -126,6 +148,9 @@ export const Command = () => {
 export default Command
 
 
+
+
+
 type TableLineProps = {
     id: string,
     command: string,
@@ -142,53 +167,14 @@ const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
     )
 }
 
-
-
 const TableOfCommand = (props:any ) => {
 
-    {/*const {myTokenInfo, token} = useAuth()
-    const[listeCommande, setListeCommande] = useState([])*/}
-    const [apiResponse, setApiResponse] = useState(null)
+    //const [apiResponse, setApiResponse] = useState(null)
     const listeCom = props.listeCommande//listeCommande.listeCommande 
     console.log(listeCom)
     const handleSetListCom = props.handleSetListCommande//handleSetListCommande.handleSetListCommande
-    {/*const handleSetListCommande = (newList : []) =>{
-        setListeCommande(newList);
-    }
-
-    const fetchGetListeCommand = async () => { 
-        try{
-            const response = await fetch('https://ventejus.newvision.cm/commande', {
-                method: 'GET',
-                headers : {
-                    "Content-type" : 'application/json',
-                    Authorization : token
-                }
-            })
-
-            const res = await response.json()
-
-            if(response.ok){
-                console.log(res.commandes)
-                let data = res.commandes
-                setListeCommande(data)
-            }else{
-
-                if(response.status === 422) { throw new Error('Erreur 422') }
-                if(response.status === 400) { throw new Error('Erreur 400') }
-                if(response.status === 403) { throw new Error('Erreur 403') }
-
-                throw new Error(String(response.status))
-            }
-            
-        }catch(error){
-            console.log("Get Liste Commande", error);
-        }
-
-    }*/}
-
-
-    const rows = listeCom.map( (commande, index) => { 
+    
+    const rows = listeCom.map( (commande) => { 
     return(
         <TableLine 
             key={commande.commandeId}
@@ -249,14 +235,13 @@ const TableOfCommand = (props:any ) => {
     )
 }
 
-
 const ActionModalButton = (props : any ) => {
     const [toastPutCommandId, setToastPutCommandId] = useState(undefined)
 
     const [statusPutRequest, setStatusPutRequest] = useState('normal')
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const {myTokenInfo, token} = useAuth()
+    const { token} = useAuth()
 
     const command = props.command
     const setCommand = props.setComm

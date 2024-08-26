@@ -1,14 +1,16 @@
 import { createContext, Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { Navigate, redirect, useNavigate } from "react-router-dom";
-import { isExpired, decodeToken } from "react-jwt"
 import isNetworkError from "is-network-error";
+import { isExpired, decodeToken } from "react-jwt"
 
 
 const AuthContext = createContext();
 
 export const  AuthProvider = ({children}) => {
     const navigate = useNavigate()
-    const [user, setUser] = useState( null  || { ...decodeToken(sessionStorage.getItem('site')) } );
+    const [user, setUser] = useState( 
+        null  || { ...decodeToken(sessionStorage.getItem('site')) , ...{isExpired : isExpired(sessionStorage.getItem('site')) } } 
+    );
     const [token, setToken] = useState(sessionStorage.getItem('site') || "");
     const [requestStatus, setRequestatus] = useState()
     const [loginState, setLoginState] = useState(false) 
@@ -16,6 +18,8 @@ export const  AuthProvider = ({children}) => {
     const [isnetworkError, setNetworkError] = useState('')
     const [myTokenInfo, setMyTokenInfo] = useState({} || null)
     const isAuthenticated = !!token
+
+
 
     const  loginAction =  async (data) => {
         setLoginState(true)
@@ -30,20 +34,22 @@ export const  AuthProvider = ({children}) => {
             const res = await response.json()
 
             if (response.ok){
-                setToken(res.access_token)
                 sessionStorage.setItem("site", res.access_token);
+                setToken(res.access_token)
+                
 
                 const myDecodeToken = decodeToken(res.access_token || null)
-                console.log(myDecodeToken)
                 const isMyTokenExpired = isExpired(res.access_token || null)
-                setMyTokenInfo({...myTokenInfo,myDecodeToken,isMyTokenExpired} )
+                setMyTokenInfo({...myTokenInfo,myDecodeToken,isMyTokenExpired} ) 
                 setUser({...myDecodeToken})
+                
+                console.log(user)
 
-                if ( myDecodeToken.role[0].nomRole == "Administrateur" || myDecodeToken.role[0].nomRole == "Client" ){
-                    return <Navigate to={'/'}/> //navigate('/')
+                if( myDecodeToken.role[0].nomRole == "Administrateur" || myDecodeToken.role[0].nomRole == "Client" ){
+                    return navigate('/') //navigate('/')
                 }
                 if ( myDecodeToken.role[0].nomRole == "Administrateur" || myDecodeToken.role[0].nomRole == "Livreur" ){
-                    return <Navigate to={'/command-list'} /> //navigate('/command-list')
+                    return navigate('/command-list') //<Navigate to={'/command-list'} /> //
                 }
                 
 
@@ -81,3 +87,5 @@ export const useAuth = () => {
   }
     return context
 }
+
+export default useAuth

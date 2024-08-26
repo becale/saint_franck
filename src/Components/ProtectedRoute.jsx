@@ -7,16 +7,48 @@ import Login from "./Page/Login"
 
 
 
-export const ProtectedRoute = ({Children}) => {
+export const ProtectedRouteClient = ({Children}) => {
     
-    const {isAuthenticated, myTokenInfo} = useAuth()
+    const {isAuthenticated, user, token} = useAuth()
+    const navigate = useNavigate()
 
-    //|| (myTokenInfo.isMyTokenExpired && myTokenInfo.myDecodeToken.role[0].nomRole == "Client")
+    //console.log('USEROOO', isExpired, user.role[0].nomRole )
 
-    //return ( ( /*!!isAuthenticated*/ (myTokenInfo.isMyTokenExpired )  ) ?   (<Navigate to='/login' />): <Outlet />  )  //&& !!myTokenInfo.isMyTokenExpired
+    if(token){
+        if( ((!user.isExpired && user.role[0].nomRole == "Client")  || (!user.isExpired && user.role[0].nomRole == "Administrateur" ) ) == true){
+            return  ( <Outlet />  )
+        }else{
+            return  ( <Navigate to={'/login'} /> )
+        }
+    }else{
+        return  ( <Navigate to={'/login'} /> )
+    }
+    
+    //return ( ( /*!!isAuthenticated*/ (user.isExpired )  ) ?   (<Navigate to='/login' />): <Outlet />  )  //&& !!user.isExpired
 
-    return ( ( !!isAuthenticated /*(myTokenInfo.isMyTokenExpired )*/  ) ?   (<Outlet /> ): <Navigate to='/login' /> )  //&& !!myTokenInfo.isMyTokenExpired
+    //return ( ( !!isAuthenticated /*(user.isExpired )*/  ) ?   (<Outlet /> ): <Navigate to='/login' /> )  //&& !!user.isExpired
 
 }
 
-export default ProtectedRoute
+
+export const ProtectedRouteLivreur = ({Children}) => {
+    
+    const {isAuthenticated, user, token} = useAuth()
+
+    console.log('USEROOO', user)
+
+    if(token){
+        if( ((!user.isExpired && user.role[0].nomRole == "Livreur")  || (!user.isExpired && user.role[0].nomRole == "Administrateur" ) ) == true){
+            return  ( <Outlet />  )
+        }else{
+            return  ( <Navigate to={'/login'} /> )
+        }
+    }
+    else{
+        return  ( <Navigate to={'/login'} /> )
+    }
+    
+    //return ( ( /*!!isAuthenticated*/ (user.isExpired )  ) ?   (<Navigate to='/login' />): <Outlet />  )  //&& !!user.isExpired
+
+    //return ( ( !!isAuthenticated /*(user.isExpired )*/  ) ?   (<Outlet /> ): <Navigate to='/login' /> )  //&& !!user.isExpired
+}

@@ -11,16 +11,16 @@ import { useEffect } from "react";
 export default function Home() {
 
     const {logOut} = useAuth()
-    /*useEffect(()=>{
+    useEffect(()=>{
     const idSetTimeout = setTimeout(()=>{
         logOut();
         window.location.reload()
-    }, 60000)
+    }, 7*60*1000)
 
     return  ()=>{
         clearTimeout(idSetTimeout)
     }
-  })*/
+  })
 
     
     return(

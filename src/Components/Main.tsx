@@ -150,7 +150,7 @@ interface Values{
 
 function OrderForm(props:any){
 
-    const [responseValue, setResponseValue] = useState('')
+    //const [responseValue, setResponseValue] = useState('')
     const [toastPostCommandId, setToastPostCommandId] = useState(undefined)
     const {token, myTokenInfo, setUser,user} = useAuth()
 
@@ -421,7 +421,7 @@ function SimpleSlider() {
       adaptiveHeight : true,
       row:2,
       autoplay:true,
-      autoplaySpeed: 2000,
+      autoplaySpeed: 4000,
       cssEase: "linear"
     };
 
