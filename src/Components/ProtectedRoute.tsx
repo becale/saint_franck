@@ -24,13 +24,9 @@ export const ProtectedRouteClient = () => {
     const sessionStorageValue = String(sessionStorage.getItem('site'))
     const [isExp, setisExpired] = useState( isExpired( sessionStorageValue ) )
 
-    
-    
     const { user, token} = useAuth()
     const USER : userProps = user as userProps
 
-    console.log(user)
-    
     if(token){
         //setisExpired(sessionStorageValue)
         if( ((!isExp && USER.role[0].nomRole == "Client")  || (!isExp && USER.role[0].nomRole == "Administrateur" ) ) == true){

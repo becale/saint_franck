@@ -31,30 +31,30 @@ export const Anonymous = () => {
 
         if(USER.role[0].nomRole == "Client"){
             if( ( (!isExp && USER.role[0].nomRole == "Client")  || (!isExp && String(USER.role[0].nomRole) == "Administrateur") ) == true){
-                console.log('Home')
+                //console.log('Home')
                 return  ( <Navigate to={'/'} /> )
             } 
         
             if( ( (!isExp && USER.role[0].nomRole == "Client")  && (!isExp && String(USER.role[0].nomRole) == "Administrateur") ) == false){
-                console.log('LOGClient')
+                //console.log('LOGClient')
                 return  ( <Outlet />  )
             }
         }
         
         if(USER.role[0].nomRole == "Livreur"){
             if( ( (!isExp && USER.role[0].nomRole == "Livreur")  || (!isExp && String(USER.role[0].nomRole) == "Administrateur") ) == true){
-                console.log('Commande')
+                //console.log('Commande')
                 return  ( <Navigate to={'/command-list'} /> )
             } 
         
             if( ( (!isExp && USER.role[0].nomRole == "Livreur")  && (!isExp && String(USER.role[0].nomRole) == "Administrateur") ) == false){
-                console.log('LOGLivreur')
+                //console.log('LOGLivreur')
                 return  ( <Outlet />  )
             }
         } 
     }
     else{
-        console.log('LOG2')
+        //console.log('LOG2')
         return  ( < Outlet/> )
     }
 }

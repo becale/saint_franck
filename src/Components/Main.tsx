@@ -76,7 +76,7 @@ export const Main = () =>{
                     if(response.status === 400) { throw new Error('Erreur 400') }
                     if(response.status === 403) { throw new Error('Erreur 403') }
     
-                    //throw new Error(response.status)
+                    throw new Error(String(response.status))
                 }
             }catch(error){
                 console.log('Fetch ListeJus', error)
@@ -194,8 +194,6 @@ function OrderForm(props:any){
             justable.push(listeJus[i].id)
             justable.push(listeJus[i].saveur)
         }
-        console.log(saveur)
-        console.log(justable)
         if(listeJus.length < 0) return -20
         return ((justable.indexOf(saveur) > 0) ? justable[justable.indexOf(saveur)-1] : -10)
     }
@@ -433,47 +431,9 @@ function SimpleSlider() {
       cssEase: "linear"
     };
 
-    //console.log(listeJus.listeJus)
-
-    /*let sliderListeJus = []
-
-    if(listeJus.listeJus.length > 0){
-        sliderListeJus = listeJus.listeJus.map((jus, index) =>{
-        return(
-            <Box width={'100%'} height={'100%'} key={index} >
-                <Square mb={'15px'}>
-                    <Image
-                        boxSize={'180px'}
-                        objectFit={'cover'}
-                        src="/src/assets/anan.png" 
-                        alt="Jus de fruits"
-                        boxShadow={'2px 2px 3px 6px rgba(0,0,5,0.6)'}
-                        borderRadius={'25px'}
-                    />
-                </Square>
-                <Center mb={'15px'}>
-                <Text>"La saveur spéciale d'Ananas frais! `${jus.saveur}`"</Text>
-                </Center>
-                <Center mb={'20px'}>
-                <Text fontSize={'lg'} fontWeight={'bold'} fontFamily={'cursive'} color={'red'}>
-                  1 Crédit
-                </Text>
-                </Center>
-            </Box>
-        )
-
-    })}
-
-    console.log(sliderListeJus)*/
-
     return (
       <Slider {...settings} >
 
-        {/*
-            (listeJus.listeJus.length > 0) ?
-
-        {sliderListeJus}
-        :*/}
         <Box width={'100%'} height={'100%'} >
           <Square mb={'15px'}>
               <Image
