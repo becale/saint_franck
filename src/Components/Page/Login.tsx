@@ -1,7 +1,6 @@
 
-import React, { useEffect, useState } from "react"
 import  * as Yup from 'yup'
-import {Image,FormControl,FormLabel, Button,VStack, Box, Center, Input, Heading, InputGroup, InputRightElement, useToast, Flex} from '@chakra-ui/react'
+import {Image,FormControl,FormLabel, Button,VStack, Box, Center, Input, Heading} from '@chakra-ui/react'
 import { useFormik } from "formik"
 import {useAuth} from "../AuthProvider"
 
@@ -11,15 +10,18 @@ import {useAuth} from "../AuthProvider"
 
 export  default function Login()  {
 
-    const auth  = useAuth()
-    const {requestStatus, loginState, token, myTokenInfo, isnetworkError} = useAuth()
+    interface LoginFormValues{
+        pseudo: string,
+        password: string
+    }
 
-    const handleSubmit = (values) => {
+    const {requestStatus, loginState, isnetworkError, loginAction} = useAuth()
 
+    const handleSubmit = (values:LoginFormValues) => {
         const data = new FormData()
         data.append('username', values.pseudo)
         data.append('password', values.password)
-        auth.loginAction(data)
+        loginAction(data)
     }
     const SpinerOverlay = () => {
         return(
@@ -55,7 +57,6 @@ export  default function Login()  {
         }),
         onSubmit: (values , {resetForm}) => {
             handleSubmit(values)
-            //auth.loginAction(values)
             resetForm()
         } 
 
@@ -165,9 +166,6 @@ export  default function Login()  {
     )
 }
 
-//left={'50%'} 
-//top={'50%'}
-//transform={'translate(-50%, -50%)'}
 
 
 
@@ -188,9 +186,7 @@ export  default function Login()  {
 
 
 
-
-
-function PasswordInput( props:any) {
+/*function PasswordInput( props:any) {
     const [show, setShow] = React.useState(false)
     const handleClick = () => {setShow(!show); }
 
@@ -215,4 +211,4 @@ function PasswordInput( props:any) {
         </InputRightElement>
       </InputGroup>
     )
-  }
+  }*/

@@ -1,8 +1,5 @@
-import React from "react";
-import  ReactPDF, { Page, Text, View, Document, StyleSheet, Image, Line, Svg} from '@react-pdf/renderer';
 
-import jsPDF from "jspdf";
-
+import   { Page, Text, View, Document, StyleSheet, Line, Svg} from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
     
@@ -123,564 +120,46 @@ const styles = StyleSheet.create({
     }
 })
 
-
-const command =  [
-    <View>
-        <View key={3}style={styles.factureContainer}>
-
-            <View style={styles.facture}>
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    <View style={styles.checkBox}></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Adresse :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carrefour SHO 215 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField} >
-
-                    <View style={styles.separateur}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Zosh2371</Text></View>
-                    </View>
-                    <View style={styles.separateur1}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Période :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Après-Midi</Text></View>
-                    </View>
-                    {/*<View style={styles.separateur2}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Date :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>22-12-2025</Text></View>
-                    </View>*/}
-                    
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-            </View>
-
-            <View >
-                <Svg  height={800} width={2} style={styles.line}>
-                    <Line 
-                        x1={0}
-                        y1={0}
-                        x2={0}
-                        y2={900}
-                        strokeWidth={2}
-                        stroke="black"
-                    />
-                </Svg>
-            </View>
-
-            <View style={styles.facture}>
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    {/*<View style={styles.checkBox}></View>*/}
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Lieu :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carefour 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Client :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>Zosh237</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-                
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-                
-            </View> 
-
-        </View>
-
-        <View key={33} style={styles.lineFactureContainer}>
-            <Svg  height={2} width={842} style={styles.line}>
-                <Line 
-                    x1={0}
-                    y1={900}
-                    x2={900}
-                    y2={0}
-                    strokeWidth={2}
-                    stroke="black"
-                />
-            </Svg>
-        </View>
-
-        <View key={4}style={styles.factureContainer}>
-            <View style={styles.facture}>
-
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    <View style={styles.checkBox}></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Adresse :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carrefour SHO 215 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField} >
-
-                    <View style={styles.separateur}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Zosh2371</Text></View>
-                    </View>
-                    <View style={styles.separateur1}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Période :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Après-Midi</Text></View>
-                    </View>
-                    {/*<View style={styles.separateur2}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Date :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>22-12-2025</Text></View>
-                    </View>*/}
-                    
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-
-            </View>
-
-            <View >
-                <Svg  height={800} width={2} style={styles.line}>
-                    <Line 
-                        x1={0}
-                        y1={0}
-                        x2={0}
-                        y2={900}
-                        strokeWidth={2}
-                        stroke="black"
-                    />
-                </Svg>
-            </View>
-
-            <View style={styles.facture}>
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    {/*<View style={styles.checkBox}></View>*/}
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Lieu :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carefour 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Client :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>Zosh237</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-                
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-                
-            </View>
-        </View>  
-
-        <View key={44} style={styles.lineFactureContainer}>
-            <Svg  height={2} width={842} style={styles.line}>
-                <Line 
-                    x1={0}
-                    y1={900}
-                    x2={900}
-                    y2={0}
-                    strokeWidth={2}
-                    stroke="black"
-                />
-            </Svg>
-        </View>
-
-        <View key={5}style={styles.factureContainer}>
-
-            <View style={styles.facture}>
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    <View style={styles.checkBox}></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Adresse :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carrefour SHO 215 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField} >
-
-                    <View style={styles.separateur}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Zosh2371</Text></View>
-                    </View>
-                    <View style={styles.separateur1}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Période :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Après-Midi</Text></View>
-                    </View>
-                    {/*<View style={styles.separateur2}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Date :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>22-12-2025</Text></View>
-                    </View>*/}
-                    
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-            </View>
-
-            <View >
-                <Svg  height={800} width={2} style={styles.line}>
-                    <Line 
-                        x1={0}
-                        y1={0}
-                        x2={0}
-                        y2={900}
-                        strokeWidth={2}
-                        stroke="black"
-                    />
-                </Svg>
-            </View>
-
-            <View style={styles.facture}>
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    {/*<View style={styles.checkBox}></View>*/}
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Lieu :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carefour 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Client :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>Zosh237</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-                
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-                
-            </View> 
-
-        </View>
-
-        <View key={55} style={styles.lineFactureContainer}>
-            <Svg  height={2} width={842} style={styles.line}>
-                <Line 
-                    x1={0}
-                    y1={900}
-                    x2={900}
-                    y2={0}
-                    strokeWidth={3}
-                    stroke="black"
-                />
-            </Svg>
-        </View>
-
-        <View key={6}style={styles.factureContainer}>
-            <View style={styles.facture}>
-
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    <View style={styles.checkBox}></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Adresse :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carrefour SHO 215 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField} >
-
-                    <View style={styles.separateur}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Zosh2371</Text></View>
-                    </View>
-                    <View style={styles.separateur1}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Période :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>Après-Midi</Text></View>
-                    </View>
-                    {/*<View style={styles.separateur2}>
-                        <View style={styles.separateurLeft}><Text style={styles.text}>Date :</Text></View>
-                        <View style={styles.separateurRight}><Text style={styles.text}>22-12-2025</Text></View>
-                    </View>*/}
-                    
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-
-            </View>
-
-            <View >
-                <Svg  height={800} width={2} style={styles.line}>
-                    <Line 
-                        x1={0}
-                        y1={0}
-                        x2={0}
-                        y2={900}
-                        strokeWidth={2}
-                        stroke="black"
-                    />
-                </Svg>
-            </View>
-
-            <View style={styles.facture}>
-                <View style={styles.headFacture}>
-                    <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                    {/*<View style={styles.checkBox}></View>*/}
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                    <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Lieu :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>EKOUNOU carefour 697992631</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Client :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>Zosh237</Text></View>
-                </View>
-
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Ananas</Text></View>
-                </View>
-                
-                <View style={styles.containerField}>
-                    <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                    <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                </View>
-                
-            </View>
-        </View>      
-    </View>
-]
+interface MyCommandListProps{
+    listeCommande: {
+        commandeId:number,
+        client: {
+            utilisateurId:number,
+            pseudo:string,
+        },
+        jus:any,
+        quantite: number,
+        dateLivraison:string,
+        periodeLivraison:string,
+        lieuLivraison:string
+    }[]
+}
 
 //Create Document Component
-const MyCommandList = (listeCommande:[]) => {
-
-    /*let listeCommandeAlivrer = listeCommande.listeCommande.map((commande, index)=>{
-        return(
-            <View key={command.commandeId}>
-                <View key={command.commandeId} style={styles.factureContainer}>
-                    <View key={command.commandeId + 1} style={styles.facture}>
-                        <View key={command.commandeId + 2} style={styles.headFacture}>
-                            <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                            <View style={styles.checkBox}></View>
-                        </View>
-
-                        <View key={command.commandeId + 3} style={styles.containerField}>
-                            <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                            <View style={styles.idcommandeItem2}><Text style={styles.text}>{commande.commandeId}</Text></View>
-                        </View>
-
-                        <View key={command.commandeId + 4} style={styles.containerField}>
-                            <View style={styles.id}><Text style={styles.text}>Adresse :</Text></View>
-                            <View style={styles.value}><Text style={styles.text}>EKOUNOU carrefour SHO 215 697992631</Text></View>
-                        </View>
-
-                        <View key={command.commandeId + 5} style={styles.containerField} >
-
-                            <View style={styles.separateur}>
-                                <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
-                                <View style={styles.separateurRight}><Text style={styles.text}>Zosh2371</Text></View>
-                            </View>
-                            <View style={styles.separateur1}>
-                                <View style={styles.separateurLeft}><Text style={styles.text}>Période :</Text></View>
-                                <View style={styles.separateurRight}><Text style={styles.text}>Après-Midi</Text></View>
-                            </View>
-                            <View style={styles.separateur2}>
-                                <View style={styles.separateurLeft}><Text style={styles.text}>Date :</Text></View>
-                                <View style={styles.separateurRight}><Text style={styles.text}>22-12-2025</Text></View>
-                            </View>
-                            
-                        </View>
-
-                        <View key={command.commandeId + 6} style={styles.containerField}>
-                            <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                            <View style={styles.idcommandeItem2}><Text style={styles.text}>05 Ananas</Text></View>
-                        </View>
-
-                        <View key={command.commandeId + 7} style={styles.containerField}>
-                            <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                            <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                        </View>
-                    </View>
-
-                    <View key={command.commandeId + 8}>
-                        <Svg  height={800} width={2} style={styles.line}>
-                            <Line 
-                                x1={0}
-                                y1={0}
-                                x2={0}
-                                y2={900}
-                                strokeWidth={2}
-                                stroke="black"
-                            />
-                        </Svg>
-                    </View>
-
-                    <View style={styles.facture} key={command.commandeId + 10}>
-                        <View style={styles.headFacture} key={command.commandeId + 11}>
-                            <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
-                        </View>
-
-                        <View style={styles.containerField} key={command.commandeId + 12}>
-                            <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
-                            <View style={styles.idcommandeItem2}><Text style={styles.text}>XXXXXXXXXXXXXXX</Text></View>
-                        </View>
-
-                        <View style={styles.containerField} key={command.commandeId + 13}>
-                            <View style={styles.id}><Text style={styles.text}>Lieu :</Text></View>
-                            <View style={styles.value}><Text style={styles.text}>EKOUNOU carefour 697992631</Text></View>
-                        </View>
-
-                        <View style={styles.containerField} key={command.commandeId + 14}>
-                            <View style={styles.id}><Text style={styles.text}>Client :</Text></View>
-                            <View style={styles.value}><Text style={styles.text}>Zosh237</Text></View>
-                        </View>
-
-                        <View style={styles.containerField} key={command.commandeId + 15}>
-                            <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
-                            <View style={styles.value}><Text style={styles.text}>05 Ananas</Text></View>
-                        </View>
-                        
-                        <View style={styles.containerField} key={command.commandeId + 16}>
-                            <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
-                            <View style={styles.value}><Text style={styles.text}>05 Saints</Text></View>
-                        </View>
-                        
-                    </View> 
-                </View>
-
-                <View key={command.commandeId + 17} style={styles.lineFactureContainer}>
-                    <Svg  height={2} width={842} style={styles.line} key={command.commandeId + 18}>
-                        <Line 
-                            x1={0}
-                            y1={900}
-                            x2={900}
-                            y2={0}
-                            strokeWidth={2}
-                            stroke="black"
-                        />
-                    </Svg>
-                </View>
-            </View>
-        )
-    })*/
-
+const MyCommandList = (listeCommande:MyCommandListProps) => {
     const listeCommandeArray = listeCommande.listeCommande
-        
-
     let listeCom = []
 
     for(let commande in listeCommande.listeCommande){
 
-        let item = <View key={command.commandeId} style={styles.factureContainer}>
-                        <View key={command.commandeId + 1} style={styles.facture}>
-                            <View key={command.commandeId + 2} style={styles.headFacture}>
+        let item = <View wrap={false} key={listeCommandeArray[commande].commandeId} style={styles.factureContainer}>
+                        <View key={listeCommandeArray[commande].commandeId + 1} style={styles.facture}>
+                            <View key={listeCommandeArray[commande].commandeId + 2} style={styles.headFacture}>
                                 <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
                                 <View style={styles.checkBox}></View>
                             </View>
     
-                            <View key={command.commandeId + 3} style={styles.containerField}>
+                            <View key={listeCommandeArray[commande].commandeId + 3} style={styles.containerField}>
                                 <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
                                 <View style={styles.idcommandeItem2}><Text style={styles.text}>{listeCommandeArray[commande].commandeId}</Text></View>
                             </View>
 
-                            <View key={command.commandeId + 4} style={styles.containerField}>
+                            <View key={listeCommandeArray[commande].commandeId + 4} style={styles.containerField}>
                                 <View style={styles.id}><Text style={styles.text}>Adresse :</Text></View>
                                 <View style={styles.value}><Text style={styles.text}>{listeCommandeArray[commande].lieuLivraison}</Text></View>
                             </View>
 
-                            <View key={command.commandeId + 5} style={styles.containerField} >
+                            <View key={listeCommandeArray[commande].commandeId + 5} style={styles.containerField} >
 
                                 <View style={styles.separateur}>
                                     <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
@@ -697,18 +176,18 @@ const MyCommandList = (listeCommande:[]) => {
                                 
                             </View>
 
-                            <View key={command.commandeId + 6} style={styles.containerField}>
+                            <View key={listeCommandeArray[commande].commandeId + 6} style={styles.containerField}>
                                 <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
                                 <View style={styles.idcommandeItem2}><Text style={styles.text}>{listeCommandeArray[commande].quantite}-{listeCommandeArray[commande].jus.saveur}(s)</Text></View>
                             </View>
 
-                            <View key={command.commandeId + 7} style={styles.containerField}>
+                            <View key={listeCommandeArray[commande].commandeId + 7} style={styles.containerField}>
                                 <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
                                 <View style={styles.value}><Text style={styles.text}>{listeCommandeArray[commande].quantite} Saint(s)</Text></View>
                             </View>
                         </View>
 
-                        <View key={command.commandeId + 8}>
+                        <View key={listeCommandeArray[commande].commandeId + 8}>
                             <Svg  height={800} width={2} style={styles.line}>
                                 <Line 
                                     x1={0}
@@ -721,22 +200,22 @@ const MyCommandList = (listeCommande:[]) => {
                             </Svg>
                         </View>
 
-                        <View style={styles.facture} key={command.commandeId + 10}>
-                            <View style={styles.headFacture} key={command.commandeId + 11}>
+                        <View style={styles.facture} key={listeCommandeArray[commande].commandeId + 10}>
+                            <View style={styles.headFacture} key={listeCommandeArray[commande].commandeId + 11}>
                                 <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
                             </View>
 
-                            <View style={styles.containerField} key={command.commandeId + 12}>
+                            <View style={styles.containerField} key={listeCommandeArray[commande].commandeId + 12}>
                                 <View style={styles.idcommandeItem1}><Text style={styles.text}>Id-Commande :</Text></View>
                                 <View style={styles.idcommandeItem2}><Text style={styles.text}>{listeCommandeArray[commande].commandeId}</Text></View>
                             </View>
 
-                            <View style={styles.containerField} key={command.commandeId + 13}>
+                            <View style={styles.containerField} key={listeCommandeArray[commande].commandeId + 13}>
                                 <View style={styles.id}><Text style={styles.text}>Lieu :</Text></View>
                                 <View style={styles.value}><Text style={styles.text}>{listeCommandeArray[commande].lieuLivraison}</Text></View>
                             </View>
 
-                            <View key={command.commandeId + 5} style={styles.containerField} >
+                            <View key={listeCommandeArray[commande].commandeId + 5} style={styles.containerField} >
 
                                 <View style={styles.separateur}>
                                     <View style={styles.separateurLeft}><Text style={styles.text}>Client :</Text></View>
@@ -753,12 +232,12 @@ const MyCommandList = (listeCommande:[]) => {
                                 
                             </View>
 
-                            <View style={styles.containerField} key={command.commandeId + 15}>
+                            <View style={styles.containerField} key={listeCommandeArray[commande].commandeId + 15}>
                                 <View style={styles.id}><Text style={styles.text}>Quantité :</Text></View>
                                 <View style={styles.value}><Text style={styles.text}>{listeCommandeArray[commande].quantite}-{listeCommandeArray[commande].jus.saveur}(s)</Text></View>
                             </View>
                             
-                            <View style={styles.containerField} key={command.commandeId + 16}>
+                            <View style={styles.containerField} key={listeCommandeArray[commande].commandeId + 16}>
                                 <View style={styles.id}><Text style={styles.text}>Montant :</Text></View>
                                 <View style={styles.value}><Text style={styles.text}>{listeCommandeArray[commande].quantite} Saint(s)</Text></View>
                             </View>
@@ -768,16 +247,13 @@ const MyCommandList = (listeCommande:[]) => {
         listeCom.push(item)
     }
  
-
     return (
         <Document>
-            <Page size='A4' style={styles.page} wrap={true}>
+            <Page size='A4' wrap={true} style={styles.page} >
                 {listeCom.length > 0 ? listeCom : <Text>Aucune Commande à livrer pour l'instant</Text> }
             </Page>
         </Document>
 	)
 }
 
-        
 export default MyCommandList 
-{/*command*/}

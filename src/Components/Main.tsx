@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import { Box, Button, Center, Text, Square, Image, useDisclosure, Select, Flex, Radio, RadioGroup, Heading, VStack } from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody} from "@chakra-ui/react"; //, useToast
 import { useEffect, useState } from "react";
@@ -10,23 +10,50 @@ import "slick-carousel/slick/slick-theme.css";
 import "/src/index.css"
 import { useField, Field, Formik, Form, useFormik } from "formik";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { isExpired, decodeToken } from "react-jwt"
 
-import {useAuth , AuthProvider} from "./AuthProvider"
+import {useAuth } from "./AuthProvider"
 
-import toast, { Toaster } from 'react-hot-toast';
-
+import toast from 'react-hot-toast';
 
 
 
 
+interface userProps {
+    contact: string,
+    exp: number,
+    id:number,
+    lieuLivraison: string,
+    montantCompte: string,
+    pseudo:string,
+    role: {
+        id:number,
+        nomRole:string
+    }[],
+    statut: boolean
+}
 
+interface Jus{
+    id:number,
+    saveur:string
+}
+interface userProps {
+    contact: string,
+    exp: number,
+    id:number,
+    lieuLivraison: string,
+    montantCompte: string,
+    pseudo:string,
+    role: {
+        id:number,
+        nomRole:string
+    }[],
+    statut: boolean
+}
 
 
 export const Main = () =>{
-    const {isAuthenticated, token, myTokenInfo, logOut} = useAuth()
-    const [listeJus, setListeJus] = useState({})
-
+    const {token} = useAuth()
+    const [listeJus, setListeJus] = useState<Jus[]>([])
     const fetchDataGetListeJus =  async () => {
             try{
                 const response = await fetch('https://ventejus.newvision.cm/jus',{
@@ -41,8 +68,8 @@ export const Main = () =>{
                 const res = await response.json()
         
                 if(response.ok){
-                    setListeJus(res)
-                    setStatutRequeteListeJus(true)
+                    setListeJus([ ...res])
+                    //setStatutRequeteListeJus(true)
                 }
                 else{
                     if(response.status === 422) { throw new Error('Erreur 422') }
@@ -60,11 +87,6 @@ export const Main = () =>{
     }, [])
     
 
-    const notify = () => toast('Here is your toast.')
-    const [isListeJus, setStatutRequeteListeJus] = useState(false)
-    
-
-    
     return(
         <Box height={'70%'} paddingLeft={'25px'} paddingRight={'25px'}>
             <Box width={'300px'} margin={'0 auto'} backgroundColor={"rgba(239,188,160,60%)"} paddingTop={'10px'} borderRadius={'25px'} border={'0.5px solid black'}>
@@ -78,18 +100,15 @@ export const Main = () =>{
 }
 export default Main
 
-
-
-export function ModalForm(listeJus : [], {...props}) {
+export const ModalForm = ( {children, listeJus} : {children:any, listeJus:Jus[]} ) => {//(  listeJus:Jus[] ) { React.FC<Jus[]>
     const [commandOverlay, setCommandOverlay] = useState(false)
-    const {isAuthenticated, myTokenInfo} = useAuth()
     const { isOpen, onOpen, onClose  } = useDisclosure()
 
     return (
       <>
         
         { 
-            (listeJus.listeJus.length > 0) ?
+            (listeJus.length > 0) ?
             
             <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'} onClick={onOpen}
             _hover={{
@@ -114,7 +133,7 @@ export function ModalForm(listeJus : [], {...props}) {
                 Patientez un instant...
             </Button>
         }
-        
+        {children}
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} >
           <ModalOverlay  
             bgImage={["url('src/assets/backimg.png')", "url('src/assets/backimgmd.png')", "url('src/assets/backimglg.png')" ]} 
@@ -134,34 +153,16 @@ export function ModalForm(listeJus : [], {...props}) {
         </Modal> 
       </>
     )
-  }
+}
  
 
 
-
-interface Values{
-    parfum : string,
-    quantite: string,
-    adressedefaut:string,
-    adresse:string,
-    date:string,
-    periode:string,
-}
-
 function OrderForm(props:any){
 
-    //const [responseValue, setResponseValue] = useState('')
-    const [toastPostCommandId, setToastPostCommandId] = useState(undefined)
-    const {token, myTokenInfo, setUser,user} = useAuth()
+    const [toastPostCommandId, setToastPostCommandId] = useState<Promise<void> | string>()
 
-    type formData = {
-        utilisateurId : number,
-        jusId : number,
-        quantite: number,
-        dateLivraison : String,
-        periodeLivraison : String,
-        lieuLivraison: String
-    }
+    const {token, setUser,user} = useAuth()
+    const USER : userProps = user as userProps
 
     const formik = useFormik({
 
@@ -176,7 +177,7 @@ function OrderForm(props:any){
 
         validationSchema : Yup.object({
             parfum: Yup.string(),//.required('Ce champ est obligatoire'),
-            quantite: Yup.number(),//.required('Ce champ est obligatoire').min(1,('Choisir au moins 1 produit')),
+            quantite: Yup.number().required('Ce champ est obligatoire').min(1,('Choisir au moins 1 produit')).max(1000).positive().integer('Veuillez entrer un nombre entier'),
             adressedefaut: Yup.string(),
             adresse: Yup.string().min(10,'Minimum 10 caractères'),
             date: Yup.date(),//.required('Ce champ est obligatoire'),
@@ -187,9 +188,8 @@ function OrderForm(props:any){
         }
     })
 
-    const getJusId = (listeJus, saveur:string) : number => {
+    const getJusId = (listeJus:any, saveur:string) : number => {
         let justable = []
-
         for(let i in listeJus){
             justable.push(listeJus[i].id)
             justable.push(listeJus[i].saveur)
@@ -199,20 +199,29 @@ function OrderForm(props:any){
         if(listeJus.length < 0) return -20
         return ((justable.indexOf(saveur) > 0) ? justable[justable.indexOf(saveur)-1] : -10)
     }
+
+    interface submitData{
+        utilisateurId:number,
+        jusId:number,
+        quantite: number,
+        dateLivraison:string,
+        periodeLivraison: string,
+        lieuLivraison:string
+    }
     
-    const formatFormData = (values) => {
-        const jusId = getJusId(props.listeJus.listeJus, values.parfum)
+    const formatFormData = (values:any) => {
+        const jusId = getJusId(props.listeJus, values.parfum)
 
-        let livraison
-        if (values.adresse == "" || values.adressedefaut == true ) { livraison = user.lieuLivraison }
-        if (values.adressedefaut == false) {livraison = user.lieuLivraison}
+        let livraison:string = "";
+        
+
+        if (values.adresse == "" || values.adressedefaut == true ) { livraison = USER.lieuLivraison }
+        if (values.adressedefaut == false) {livraison = USER.lieuLivraison}
         if (values.adresse !== "") { livraison = values.adresse }
-        if (values.adresse !== "" && values.adressedefaut == true) {livraison = `${user.lieuLivraison} ${values.adresse}`}
+        if (values.adresse !== "" && values.adressedefaut == true) {livraison = `${USER.lieuLivraison} ${values.adresse}`}
         
-
-        
-        const data : formData =  {
-            utilisateurId : user.id, 
+        const data : submitData =  {
+            utilisateurId : USER.id, 
             jusId : jusId, 
             quantite : values.quantite, 
             dateLivraison : values.date,
@@ -222,7 +231,7 @@ function OrderForm(props:any){
         return data
     }
 
-    const fetchDataPostCommand = async (data) => {
+    const fetchDataPostCommand = async (data:submitData) => {
 
         props.setCommandOverlay(true)
 
@@ -235,13 +244,11 @@ function OrderForm(props:any){
                 },
                 body : JSON.stringify(data)
             })
-
             const res  = await response.json()
 
             if(response.ok){
-
                 toast.success('Votre Commande a été réalisée avec Succès', {
-                    id: toastPostCommandId,
+                    id: toastPostCommandId as string,
                     duration: 6000
                 })
                 props.lockWindow()
@@ -250,11 +257,13 @@ function OrderForm(props:any){
                 const montantcomtpte = {
                     montantCompte : String(res.client.montant)
                 }
-                setUser( {...user, ...montantcomtpte} )
+                //Ajout du solde dans le Session Storage
+                sessionStorage.setItem('montant',montantcomtpte.montantCompte)
+                setUser( {...user, ...montantcomtpte} as userProps )
 
             }else{
                 toast.error('Une erreur est survenue, Votre commande a échoué', {
-                    id: toastPostCommandId,
+                    id: toastPostCommandId as string,
                     duration: 6000
                 })
                 if(response.status === 422) { throw new Error('Erreur 422') }
@@ -265,13 +274,12 @@ function OrderForm(props:any){
             props.lockWindow()
             props.setCommandOverlay(false)
             toast.error('Erreur réseau, votre commande a échoué', {
-                    id: toastPostCommandId,
+                    id: toastPostCommandId as string,
                     duration : 6000
                 })
             console.log('Fetch Data Post Commande', error)
         }
     }
-
 
 
     return(
@@ -318,7 +326,7 @@ function OrderForm(props:any){
         
                     <FormControl  height={'60px'} marginBottom={'25px'}>
                     <FormLabel>Parfum</FormLabel>
-                    <SelectJuice label='Jus'name='parfum'></SelectJuice>
+                    <SelectJuice name='parfum'></SelectJuice>
                     </FormControl>
         
                     <FormControl  height={'50px'} marginBottom={'45px'}  >
@@ -329,22 +337,22 @@ function OrderForm(props:any){
                     </FormControl>
         
                     <FormControl   marginBottom={'15px'}>
-                        <ToggleInput name="adresse"></ToggleInput>
+                        <ToggleInput ></ToggleInput>
                     </FormControl>
         
                     <FormControl  height={'50px'} marginBottom={'40px'}>
                         <FormLabel>Date de livraison</FormLabel>
-                        <InputDate label={'date'}></InputDate>
+                        <InputDate ></InputDate>
                     </FormControl>
         
                     <FormControl  height={'50px'} marginBottom={'25px'}>
                         <FormLabel>De préférence</FormLabel>
-                        <RadioGroupOf2 label='preference'></RadioGroupOf2>
+                        <RadioGroupOf2 ></RadioGroupOf2>
                     </FormControl>
         
                     <Center as={VStack } pt={'15px'} spacing={'20px'}>
 
-                        <Box textAlign={'center'}>Vous disposez actuellement de  <br /><span className="styleamount">{/*myTokenInfo.myDecodeToken.montantCompte*/}{user.montantCompte} </span> crédit(s)</Box>
+                        <Box textAlign={'center'}>Vous disposez actuellement de  <br /><span className="styleamount">{USER.montantCompte} </span> crédit(s)</Box>
 
                         <Heading size={'lg'}>Total : <span className="styleamount">{formik.values.quantite}</span> Crédit(s)</Heading>
 
@@ -352,7 +360,7 @@ function OrderForm(props:any){
         
                     <Center mt={'30px'}>
 
-                        {( formik.values.parfum == '' || formik.values.quantite == '' || formik.values.date == '' || formik.values.periode == '' || (Number(user.montantCompte)<=0) || ( (Number(user.montantCompte) < Number(formik.values.quantite))) )?
+                        {( formik.values.parfum == '' || formik.values.quantite == '' || formik.values.quantite == '0' || formik.values.date == '' || formik.values.periode == '' || (Number(USER.montantCompte)<=0) || ( (Number(USER.montantCompte) < Number(formik.values.quantite))) )?
                             <Button 
                                 isDisabled  
                                 
@@ -370,7 +378,7 @@ function OrderForm(props:any){
                                     color:'black',
                             }}  
                         >
-                            { ( (user.montantCompte <= 0 ) || ( Number(user.montantCompte) < Number(formik.values.quantite) ) )? "Solde insuffisant" : 'Commander'}
+                            { ( (Number(USER.montantCompte) <= 0 ) || ( Number(USER.montantCompte) < Number(formik.values.quantite) ) )? "Solde insuffisant" : 'Commander'}
                             </Button>
                         :
                             <Button 
@@ -510,9 +518,9 @@ function SimpleSlider() {
       </Slider>
     );
   }
-  const SelectJuice = ({ label, ...props}) => {
+  const SelectJuice = ( { ...props}) => {
 
-    const [field, meta] = useField(props)
+    const [field, meta] = useField({name:'parfum'})
 
     return(
         <>
@@ -535,7 +543,7 @@ function SimpleSlider() {
         </>
     )
   }
-  const NumberInput = ({label, ...props}) =>{
+  const NumberInput = () =>{
 
     const [field, meta] = useField({name:'quantite'})
 
@@ -558,7 +566,7 @@ function SimpleSlider() {
         </>
     )
   }
-  const InputDate = ({label, ...props}) => {
+  const InputDate = ({ ...props}) => {
     
     const [field, meta] = useField({name:'date'})
 
@@ -583,7 +591,7 @@ function SimpleSlider() {
         </>
     )
   }
-  const RadioGroupOf2 = ({label, ...props}) => {
+  const RadioGroupOf2 = () => {
     
     const [field, meta] = useField({name:'periode',type:'radio'})
 
@@ -613,7 +621,7 @@ function SimpleSlider() {
         </>
     )
   }
-  const ToggleInput = ( props ) => {
+  const ToggleInput = () => {
 
     const [field, meta, ] = useField({name:'adresse'})
 
@@ -657,7 +665,6 @@ function SimpleSlider() {
         </>
     )
 }
-
 const SpinerOverlay = () => {
     return(
         <Box as={Center}

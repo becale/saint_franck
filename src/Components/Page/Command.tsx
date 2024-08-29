@@ -25,7 +25,7 @@ import {
     Button,
     Center
 } from "@chakra-ui/react";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState  } from "react";
 import {useAuth} from "../AuthProvider"
 import MyCommandList from "./CommandPdf";
 import toast, { Toaster } from 'react-hot-toast';
@@ -33,6 +33,26 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
  
 
 
+interface commandProps{
+    client: {
+        utilisateurId: number,
+        pseudo:string,
+        montant:number,
+        contact: string
+    },
+    jus: {
+        jusId:number,
+        saveur:string
+    },
+    commandeId : number,
+    quantite: number,
+    dateCommande:string,
+    dateLivraison:string,
+    periodeLivraison:string,
+    lieuLivraison:string,
+    statut?: string
+
+}
 
 export const Command = () => {
 
@@ -76,12 +96,16 @@ export const Command = () => {
     }
 
     useEffect(()=>{
+        fetchGetListeCommand();
+    }, [])
+    /*useEffect(()=>{
+        
         const getCommandeTimer = setInterval(()=>{
             fetchGetListeCommand()
         }, 2*60*1000)
 
         return () =>{ clearInterval(getCommandeTimer) }
-    },)
+    },)*/
 
     useEffect(()=>{
         const idSetTimeout = setTimeout(()=>{
@@ -105,7 +129,6 @@ export const Command = () => {
             clearTimeout(idSetTimeoutAlert)
         }
     })
-
 
     return(
         <>
@@ -131,6 +154,18 @@ export const Command = () => {
                             }      
                         </PDFDownloadLink>
                     </Button>
+
+                    <Button width={'280px'} borderRadius={'25px'} bgColor={'rgba(52,42,42,100%)'} color={'white'} border={'1px white solid'}
+                        _hover={{
+                        border: "1px solid black",
+                        bg: 'lightyellow',
+                        color:'black',
+                        }}
+                    >
+                        Rafraîchir la liste de commmandes
+                    </Button>
+
+
                 </Center>
             </Box>
 
@@ -156,7 +191,7 @@ type TableLineProps = {
     command: string,
     action?: ReactElement
  }
-const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
+const TableLine = ( {id , command, action} : TableLineProps) =>{
 
     return(
         <Tr key={id}>
@@ -167,18 +202,18 @@ const TableLine = ( {id , command, action} : TableLineProps, {...props}) =>{
     )
 }
 
-const TableOfCommand = (props:any ) => {
+const TableOfCommand = ({listeCommande, handleSetListCommande}:any) => {
 
     //const [apiResponse, setApiResponse] = useState(null)
-    const listeCom = props.listeCommande//listeCommande.listeCommande 
+    const listeCom = listeCommande
     console.log(listeCom)
-    const handleSetListCom = props.handleSetListCommande//handleSetListCommande.handleSetListCommande
+    const handleSetListCom = handleSetListCommande
     
-    const rows = listeCom.map( (commande) => { 
+    const rows = listeCom.map( (commande:commandProps) => { 
     return(
         <TableLine 
             key={commande.commandeId}
-            id = {commande.commandeId}
+            id = {String(commande.commandeId)}
             command = {`${commande.quantite}-${commande.jus.saveur}(s)-pour-${commande.client.pseudo}-vers-${commande.lieuLivraison} `}
             action={< ActionModalButton command={commande} setComm={handleSetListCom} listeCom ={listeCom} />}
         />
@@ -236,7 +271,7 @@ const TableOfCommand = (props:any ) => {
 }
 
 const ActionModalButton = (props : any ) => {
-    const [toastPutCommandId, setToastPutCommandId] = useState(undefined)
+    const [toastPutCommandId, setToastPutCommandId] = useState<Promise<void> | string>()
 
     const [statusPutRequest, setStatusPutRequest] = useState('normal')
 
@@ -263,17 +298,16 @@ const ActionModalButton = (props : any ) => {
                 },
                 body : JSON.stringify(dataSubmit)
             })
-            const res = await response.json()
+            //const res = await response.json()
 
             if(response.ok){
                 setStatusPutRequest('OK')
                 toast.success("La commande a été validée avec succès", {
-                    id: toastPutCommandId,
+                    id: toastPutCommandId as string,
                     duration: 6000
                 })
 
-                const newFilterListCommand =  listeCom.filter((commande)=>(commande.commandeId !== dataSubmit.commandeId ))
-                console.log("TEST set",setCommand)
+                const newFilterListCommand =  listeCom.filter((commande:any)=>(commande.commandeId !== dataSubmit.commandeId ))
                 setCommand(newFilterListCommand)
             }
             else{
@@ -284,7 +318,7 @@ const ActionModalButton = (props : any ) => {
             setStatusPutRequest('normal')
             console.log(error)
             toast.error("Une erreur est survenue, l'action a échoué", {
-                id: toastPutCommandId,
+                id: toastPutCommandId as string,
                 duration: 6000
             })
 
