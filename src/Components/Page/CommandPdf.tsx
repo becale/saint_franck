@@ -304,8 +304,8 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
     return (
         <Document>
             <Page size='A4' wrap={true} style={styles.page} >
-                { /*listeCom.length > 0 ? listeCom : <Text>Aucune Commande à livrer pour l'instant</Text> */}
-                { <FactureContainerImg></FactureContainerImg> }
+                { listeCom.length > 0 ? listeCom : <Text>Aucune Commande à livrer pour l'instant</Text> }
+                {/* <FactureContainerImg></FactureContainerImg> */}
             </Page>
         </Document>
 	)
