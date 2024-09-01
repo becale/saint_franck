@@ -56,7 +56,7 @@ export const Main = () =>{
     const [listeJus, setListeJus] = useState<Jus[]>([])
     const fetchDataGetListeJus =  async () => {
             try{
-                const response = await fetch('http://apiventejus/jus',{
+                const response = await fetch('https://ventejus.newvision.cm:8080/jus',{
                     method : 'GET',
                     headers : {
                         'content-type' : "application/json",
@@ -235,7 +235,7 @@ function OrderForm(props:any){
         props.setCommandOverlay(true)
 
         try{
-            const response = await fetch('http://apiventejus/commande', {
+            const response = await fetch('https://ventejus.newvision.cm:8080/commande', {
                 method: 'POST',
                 headers: {
                     'content-type' : 'application/json',
