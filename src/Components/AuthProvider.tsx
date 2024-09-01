@@ -76,6 +76,9 @@ export const  AuthProvider = ({children}:any) => {
 
                 setMyTokenInfo({...myTokenInfo,myDecodeToken,isMyTokenExpired} ) 
                 setUser({...decodeToken(res.access_token)} as userProps)
+
+                //Ajout du solde dans le Session Storage
+                sessionStorage.setItem('montant',(myDecodeToken.montantCompte))
                 
                 if( myDecodeToken.role[0].nomRole == "Administrateur" || myDecodeToken.role[0].nomRole == "Client" ){
                     return navigate('/') 
