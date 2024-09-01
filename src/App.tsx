@@ -9,8 +9,6 @@ import {ProtectedRouteClient , ProtectedRouteLivreur} from './Components/Protect
 import Anonymous from './Components/Anonymous'
 import { Command } from './Components/Page/Command'
 import { Toaster } from 'react-hot-toast';
-import { useEffect } from 'react'
-import {useAuth} from './Components/AuthProvider'
 
 function App() {
   

@@ -1,7 +1,7 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import { useState } from "react";
-import { isExpired } from "react-jwt"
+//import { useState } from "react";
+//import { isExpired } from "react-jwt"
 
 
 interface userProps {
@@ -19,17 +19,17 @@ interface userProps {
 }
 
 export const Anonymous = () => {
-    const sessionStorageValue = String(sessionStorage.getItem('site'))
-    const [isExp, setisExpired] = useState( isExpired( sessionStorageValue ) )
+    //const sessionStorageValue = String(sessionStorage.getItem('site'))
+    //const [isExp, setisExpired] = useState( isExpired( sessionStorageValue ) )
 
-    const {token, user} = useAuth()
+    const {token, user, isExp} = useAuth()
     const USER : userProps = user as userProps
 
 
     if (token) {
         //setisExpired(isExpired( sessionStorageValue ))
 
-        if(USER.role[0].nomRole == "Client"){
+        if(USER.role[0].nomRole == "Client" || USER.role[0].nomRole == "Administrateur"){
             if( ( (!isExp && USER.role[0].nomRole == "Client")  || (!isExp && String(USER.role[0].nomRole) == "Administrateur") ) == true){
                 //console.log('Home')
                 return  ( <Navigate to={'/'} /> )
@@ -41,7 +41,7 @@ export const Anonymous = () => {
             }
         }
         
-        if(USER.role[0].nomRole == "Livreur"){
+        if(USER.role[0].nomRole == "Livreur" || USER.role[0].nomRole == "Administrateur"){
             if( ( (!isExp && USER.role[0].nomRole == "Livreur")  || (!isExp && String(USER.role[0].nomRole) == "Administrateur") ) == true){
                 //console.log('Commande')
                 return  ( <Navigate to={'/command-list'} /> )

@@ -2,10 +2,7 @@
 import { Footer } from "../Footer";
 import { Main } from "../Main";
 import {Header} from "../Header";
-import {useAuth, AuthProvider} from '../AuthProvider'
-import { Navigate, useNavigate } from "react-router-dom";
-import { PDFDownloadLink, Document, Page } from '@react-pdf/renderer';
-import MyCommandList from "./CommandPdf";
+import {useAuth} from '../AuthProvider'
 import { useEffect } from "react";
 
 export default function Home() {

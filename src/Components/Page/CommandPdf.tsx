@@ -1,5 +1,5 @@
 
-import   { Page, Text, View, Document, StyleSheet, Line, Svg} from '@react-pdf/renderer';
+import   { Page, Text, View, Document, StyleSheet, Line, Svg, Image} from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
     
@@ -117,6 +117,46 @@ const styles = StyleSheet.create({
 
     lineFactureContainer:{
         marginBottom:'0.22cm'
+    },
+    image:{
+        position:'absolute',
+        width:'100%',
+        height:'100%'
+    }, 
+
+    factureContainerImg:{
+        width:'9cm',
+        height:'5cm',
+        borderTop: 1,
+        borderBottom : 1,
+        borderLeft: 1,
+        borderRight: 1,
+        borderColor: 'black',
+        borderTopLeftRadius: '10pt',
+        borderTopRightRadius: '10pt',
+        borderBottomRightRadius: '10pt',
+        borderBottomLeftRadius: '10pt',
+    }, 
+    factureImg:{
+        position:'absolute',
+        width:'8cm',
+        height:'4cm',
+        borderTopLeftRadius: '10pt',
+        borderTopRightRadius: '10pt',
+        borderBottomRightRadius: '10pt',
+        borderBottomLeftRadius: '10pt',
+        zIndex:1
+    },
+    factureDetails:{
+        position:'absolute',
+        backgroundColor:'white',
+        width:'8cm',
+        height:'4cm',
+        borderTopLeftRadius: '10pt',
+        borderTopRightRadius: '10pt',
+        borderBottomRightRadius: '10pt',
+        borderBottomLeftRadius: '10pt',
+        zIndex:5
     }
 })
 
@@ -140,10 +180,23 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
     const listeCommandeArray = listeCommande.listeCommande
     let listeCom = []
 
+    const FactureContainerImg = () => (
+    <View style={styles.factureContainerImg}>
+        <View style={styles.factureDetails}>
+            <Text>1AZERTYUQSDFGHHDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD</Text>
+        </View>
+        <View style={styles.factureImg}>
+            <Image src={'src/assets/Jus.PNG'} style={styles.image} />
+        </View>
+    </View>
+)
+
     for(let commande in listeCommande.listeCommande){
 
         let item = <View wrap={false} key={listeCommandeArray[commande].commandeId} style={styles.factureContainer}>
+
                         <View key={listeCommandeArray[commande].commandeId + 1} style={styles.facture}>
+                            <Image src={'src/assets/Jus.PNG'} style={styles.image} />
                             <View key={listeCommandeArray[commande].commandeId + 2} style={styles.headFacture}>
                                 <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
                                 <View style={styles.checkBox}></View>
@@ -243,6 +296,7 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
                             </View>
                             
                         </View> 
+
                     </View>
         listeCom.push(item)
     }
@@ -250,7 +304,8 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
     return (
         <Document>
             <Page size='A4' wrap={true} style={styles.page} >
-                {listeCom.length > 0 ? listeCom : <Text>Aucune Commande à livrer pour l'instant</Text> }
+                { /*listeCom.length > 0 ? listeCom : <Text>Aucune Commande à livrer pour l'instant</Text> */}
+                { <FactureContainerImg></FactureContainerImg> }
             </Page>
         </Document>
 	)

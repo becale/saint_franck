@@ -76,7 +76,7 @@ export const Command = () => {
             const res = await response.json()
 
             if(response.ok){
-                console.log(res.commandes)
+                //console.log(res.commandes)
                 let data = res.commandes
                 setListeCommande(data)
             }else{
@@ -90,7 +90,7 @@ export const Command = () => {
             
         }catch(error){
             console.log("Get Liste Commande", error);
-            console.log('LISTE COMMANDE', listeCommande)
+            //console.log('LISTE COMMANDE', listeCommande)
         }
 
     }
@@ -150,7 +150,7 @@ export const Command = () => {
                         fileName="Test.pdf"  
                         >
                             {({loading}) => 
-                                loading? 'Chargement du document...': 'Imprimmer les commandes'
+                                loading? 'Chargement...': 'Imprimmer'
                             }      
                         </PDFDownloadLink>
                     </Button>
@@ -162,9 +162,8 @@ export const Command = () => {
                         color:'black',
                         }}
                     >
-                        Rafraîchir la liste de commmandes
+                        Rafraîchir
                     </Button>
-
 
                 </Center>
             </Box>
@@ -206,7 +205,7 @@ const TableOfCommand = ({listeCommande, handleSetListCommande}:any) => {
 
     //const [apiResponse, setApiResponse] = useState(null)
     const listeCom = listeCommande
-    console.log(listeCom)
+    //console.log(listeCom)
     const handleSetListCom = handleSetListCommande
     
     const rows = listeCom.map( (commande:commandProps) => { 

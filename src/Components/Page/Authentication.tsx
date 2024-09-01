@@ -1,9 +1,7 @@
 
 import React from "react"
 
-import  * as Yup from 'yup'
-
-import {FormControl,FormLabel,FormErrorMessage,FormHelperText, Button,VStack, Box, Center, Input, Heading, InputGroup, InputRightElement, Flex} from '@chakra-ui/react'
+import {FormControl,FormLabel, Button,VStack, Box, Center, Input, Heading, InputGroup, InputRightElement} from '@chakra-ui/react'
 
 
 

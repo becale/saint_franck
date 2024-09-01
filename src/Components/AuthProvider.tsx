@@ -28,7 +28,9 @@ interface AuthContextProps {
     token: string,
     setUser: React.Dispatch<React.SetStateAction<userProps>>, 
     loginAction: (data:any)=>Promise<any>, 
-    logOut: ()=>void
+    logOut: ()=>void,
+    setisExpired : React.Dispatch<React.SetStateAction<boolean>>,
+    isExp?:boolean
 }
 
 
@@ -50,6 +52,8 @@ export const  AuthProvider = ({children}:any) => {
     const [isnetworkError, setNetworkError] = useState(false)
     const [myTokenInfo, setMyTokenInfo] = useState({} || null)
     const isAuthenticated = !!token
+
+    const [isExp, setisExpired] = useState( isExpired( sessionStorageValue ) )
 
     const  loginAction =  async (data:FormData) : Promise<any> => {
         setLoginState(true)
@@ -105,7 +109,8 @@ export const  AuthProvider = ({children}:any) => {
         return navigate('/login')//<Navigate to={'/login'}/>
       };
 
-    return <AuthContext.Provider value={{ myTokenInfo, isAuthenticated,loginState, user, requestStatus , isnetworkError, token, setUser, loginAction, logOut }}>{children}</AuthContext.Provider>
+    
+    return <AuthContext.Provider value={{ isExp, setisExpired, myTokenInfo, isAuthenticated,loginState, user, requestStatus , isnetworkError, token, setUser, loginAction, logOut }}>{children}</AuthContext.Provider>
 };
 
 

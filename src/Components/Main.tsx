@@ -210,7 +210,8 @@ function OrderForm(props:any){
     const formatFormData = (values:any) => {
         const jusId = getJusId(props.listeJus, values.parfum)
 
-        let livraison:string = "";
+        //utilisation du formik
+        let livraison:string = formik.values.adresse;
         
 
         if (values.adresse == "" || values.adressedefaut == true ) { livraison = USER.lieuLivraison }
