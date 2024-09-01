@@ -42,8 +42,6 @@ export const ProtectedRouteClient = () => {
     }
 }
 
-
-
 export const ProtectedRouteLivreur = () => {
 
     const sessionStorageValue = String(sessionStorage.getItem('site'))

@@ -65,7 +65,7 @@ export const Command = () => {
 
     const fetchGetListeCommand = async () => { 
         try{
-            const response = await fetch('https://ventejus.newvision.cm/commande', {
+            const response = await fetch('http://apiventejus/commande', {
                 method: 'GET',
                 headers : {
                     "Content-type" : 'application/json',
@@ -289,7 +289,7 @@ const ActionModalButton = (props : any ) => {
             statut: true
         }
         try{
-            const response = await fetch('https://ventejus.newvision.cm/commande', {
+            const response = await fetch('http://apiventejus/commande', {
                 method: 'PUT',
                 headers:{
                     'content-type': 'application/json',

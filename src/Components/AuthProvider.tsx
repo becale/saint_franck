@@ -60,7 +60,7 @@ export const  AuthProvider = ({children}:any) => {
         //setRequestatus()
         setNetworkError(false)
         try {
-            const response = await fetch('https://ventejus.newvision.cm/login',{
+            const response = await fetch('http://apiventejus/login',{
                 method: 'POST',
                 body: data,
             })
