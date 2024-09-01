@@ -180,7 +180,7 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
     const listeCommandeArray = listeCommande.listeCommande
     let listeCom = []
 
-    const FactureContainerImg = () => (
+    {/*const FactureContainerImg = () => (
     <View style={styles.factureContainerImg}>
         <View style={styles.factureDetails}>
             <Text>1AZERTYUQSDFGHHDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD</Text>
@@ -189,7 +189,7 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
             <Image src={'src/assets/Jus.PNG'} style={styles.image} />
         </View>
     </View>
-)
+)*/}
 
     for(let commande in listeCommande.listeCommande){
 
@@ -254,6 +254,7 @@ const MyCommandList = (listeCommande:MyCommandListProps) => {
                         </View>
 
                         <View style={styles.facture} key={listeCommandeArray[commande].commandeId + 10}>
+                            <Image src={'src/assets/Jus.PNG'} style={styles.image} />
                             <View style={styles.headFacture} key={listeCommandeArray[commande].commandeId + 11}>
                                 <View style={styles.title}><Text style={styles.text}>Reçu Commande</Text></View>
                             </View>
